@@ -1,5 +1,6 @@
 // ===== מסכים, קריירה ושמירה =====
 const app = document.getElementById('app');
+const PWA = window.PWA || { state: () => 'none', install: async () => false, standalone: () => false };
 let S = load();
 let draft = null, currentFight = null, hubTab = 'fights', wrTry = null;
 if (S && !S.outfit) S.outfit = { owned: [], equip: {} };
@@ -75,16 +76,30 @@ function renderTitle() {
   app.innerHTML = `
   <section class="screen title-screen">
     <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
-    <img class="title-emblem" src="assets/logo.webp" alt="לוגו הדרך לחגורה: כפפת אגרוף אדומה" width="1254" height="1254" decoding="async">
+    <img class="title-emblem" src="assets/logo.webp" alt="לוגו הדרך לחגורה: כפפת אגרוף אדומה" width="1254" height="1254" fetchpriority="high">
     <h1 class="logo">הדרך לחגורה</h1>
     <p class="tagline">בנה לוחם משלך, התאמן, נצח יריבים וטפס בדירוג עד לחגורת אלוף העולם.</p>
     <div class="title-actions">
       ${S ? `<button class="btn btn-red btn-lg sweep" data-act="continue">המשך קריירה<small>${esc(S.name)} · מאזן ${S.record.w}-${S.record.l}</small></button>` : ''}
       <button class="btn ${S ? 'btn-ghost' : 'btn-red btn-lg sweep'}" data-act="new">קריירה חדשה</button>
     </div>
-    <p class="fine">משחקים במקלדת או במסך מגע · ההתקדמות נשמרת בדפדפן</p>
+    <div id="installSlot"></div>
+    <p class="fine">משחקים במקלדת או במסך מגע · ההתקדמות נשמרת במכשיר</p>
   </section>`;
+  renderInstall();
 }
+
+function renderInstall() {
+  const slot = document.getElementById('installSlot');
+  if (!slot) return;
+  const st = PWA.state();
+  slot.innerHTML = st === 'prompt'
+    ? '<button class="btn btn-ghost btn-install" data-act="install"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>התקן כאפליקציה</button>'
+    : st === 'ios'
+      ? '<p class="ios-hint">להתקנה כאפליקציה: לחץ על <b>שתף</b> <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg> ואז <b>״הוסף למסך הבית״</b></p>'
+      : '';
+}
+document.addEventListener('pwa-change', renderInstall);
 
 // ---------- יצירת לוחם ----------
 function swatchGroup(key, label, colors) {
@@ -146,6 +161,15 @@ function refreshGroup(k) {
 }
 
 // ---------- מרכז הקריירה ----------
+const TAB_ICONS = {
+  fights: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  train: '<path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/>',
+  shop: '<path d="M6 7h12l1 13H5zM9 7a3 3 0 0 1 6 0"/>',
+  wardrobe: '<path d="m8 3-5 3 2 4 3-1v11h8V9l3 1 2-4-5-3a4 4 0 0 1-8 0z"/>',
+  profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
+};
+const tabIcon = id => `<svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TAB_ICONS[id]}</svg>`;
+
 function renderHub(tab) {
   const keepScroll = !tab || tab === hubTab, y = window.scrollY;
   if (tab) hubTab = tab;
@@ -174,7 +198,7 @@ function renderHub(tab) {
       </div>
     </header>
     <nav class="tabs" role="tablist">
-      ${tabs.map(([id, name, cls]) => `<button role="tab" class="tab ${cls}${hubTab === id ? ' on' : ''}" aria-selected="${hubTab === id}" data-act="tab" data-tab="${id}">${name}</button>`).join('')}
+      ${tabs.map(([id, name, cls]) => `<button role="tab" class="tab ${cls}${hubTab === id ? ' on' : ''}" aria-selected="${hubTab === id}" data-act="tab" data-tab="${id}">${tabIcon(id)}<span>${name}</span></button>`).join('')}
     </nav>
     <div class="tab-body">${({ fights: tabFights, train: tabTrain, shop: tabShop, wardrobe: tabWardrobe, profile: tabProfile })[hubTab]()}</div>
   </section>`;
@@ -526,6 +550,7 @@ const ACTIONS = {
     if (S && !confirm('להתחיל קריירה חדשה? הקריירה הנוכחית תימחק.')) return;
     go('create', false);
   },
+  install() { PWA.install(); },
   continue() { go('hub'); },
   title() { go('title'); },
   hub() { go('hub'); },

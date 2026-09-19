@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "הדרך לחגורה",
+  "short_name": "הדרך לחגורה",
+  "description": "משחק קריירת אגרוף: בנה לוחם, התאמן, קנה ציוד ולבוש, וטפס עד חגורת אלוף העולם.",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#0a0708",
+  "theme_color": "#0a0c11",
+  "categories": ["games", "sports"],
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

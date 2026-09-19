@@ -6,8 +6,10 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 read = lambda p: open(os.path.join(ROOT, p), encoding='utf-8').read()
 
 html = read('index.html')
-fonts = re.search(r'<link rel="stylesheet" href="(https://fonts\.googleapis\.com[^"]+)">', html).group(1)
-scripts = re.findall(r'<script src="([^"]+)"></script>', html)
+# בקובץ הבודד (artifact) הפונטים נטענים מ-Google Fonts; באתר עצמו הם מקומיים (fonts.css)
+fonts = 'https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&family=Secular+One&display=swap'
+# pwa.js לא נכלל: אין service worker בקובץ בודד
+scripts = [s for s in re.findall(r'<script src="([^"]+)"></script>', html) if not s.endswith('pwa.js')]
 
 out = f'''<title>הדרך לחגורה</title>
 <meta name="theme-color" content="#0a0c11">
