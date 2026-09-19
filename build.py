@@ -1,6 +1,6 @@
 # אורז את כל המשחק לקובץ אחד: dist/boxing.html
 # הרצה: python build.py
-import os, re
+import os, re, base64
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 read = lambda p: open(os.path.join(ROOT, p), encoding='utf-8').read()
@@ -18,6 +18,10 @@ out = f'''<title>הדרך לחגורה</title>
 <div id="app" dir="rtl" lang="he"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 ''' + '\n'.join(f'<script>\n{read(s)}\n</script>' for s in scripts) + '\n'
+
+# הלוגו מוטמע כ-data URI כדי שהקובץ הבודד יהיה עצמאי
+logo = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(ROOT, 'assets', 'logo.webp'), 'rb').read()).decode()
+out = out.replace('assets/logo.webp', logo)
 
 # המסמך העוטף לא מגדיר dir=rtl, אז מגדירים אותו מהסקריפט
 out = out.replace('<div id="app" dir="rtl" lang="he"></div>',

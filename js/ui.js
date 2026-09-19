@@ -75,7 +75,7 @@ function renderTitle() {
   app.innerHTML = `
   <section class="screen title-screen">
     <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
-    <canvas class="title-duo" aria-hidden="true"></canvas>
+    <img class="title-emblem" src="assets/logo.webp" alt="לוגו הדרך לחגורה: כפפת אגרוף אדומה" width="1254" height="1254" decoding="async">
     <h1 class="logo">הדרך לחגורה</h1>
     <p class="tagline">בנה לוחם משלך, התאמן, נצח יריבים וטפס בדירוג עד לחגורת אלוף העולם.</p>
     <div class="title-actions">
@@ -84,20 +84,6 @@ function renderTitle() {
     </div>
     <p class="fine">משחקים במקלדת או במסך מגע · ההתקדמות נשמרת בדפדפן</p>
   </section>`;
-  const a = S ? playerLook() : DEFAULT_LOOK, b = OPPONENTS[OPPONENTS.length - 1].look;
-  addAnim(app.querySelector('.title-duo'), (ctx, w, h, t) => {
-    const c1 = t % 2.4, c2 = (t + 1.2) % 2.4;
-    const pA = { bob: Math.abs(Math.sin(t * 4.4)) * 3.4, sway: t * 2.2 }, pB = { bob: Math.abs(Math.sin(t * 4.4 + 1.5)) * 3.4, sway: t * 2.2 + 2 };
-    if (c1 < 0.32) { pA.lead = Math.sin(c1 / 0.32 * Math.PI); pB.block = pA.lead; }
-    if (c2 < 0.42) { pB.rear = Math.sin(c2 / 0.42 * Math.PI); pA.duck = pB.rear * 0.8; pA.leanX = -12 * pB.rear; }
-    const k = Math.max(w / 960, h / 440);
-    ctx.save(); ctx.translate((w - 960 * k) / 2, (h - 440 * k) / 2); ctx.scale(k, k);
-    drawArenaScene(ctx, 960, 440, t, 0.45, [], 398);
-    drawFighter(ctx, a, 480 - 72, 398, 1, pA, 1.18);
-    drawFighter(ctx, b, 480 + 72, 398, -1, pB, 1.18);
-    drawArenaFront(ctx, 960, 440, t);
-    ctx.restore();
-  });
 }
 
 // ---------- יצירת לוחם ----------
