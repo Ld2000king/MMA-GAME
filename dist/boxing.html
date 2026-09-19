@@ -1,0 +1,2654 @@
+<title>הדרך לחגורה</title>
+<meta name="theme-color" content="#0a0c11">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&family=Secular+One&display=swap">
+<style>
+/* ===== הדרך לחגורה — עיצוב ===== */
+:root {
+  --bg: #0a0c11;
+  --surface: #151923;
+  --surface-2: #1c2130;
+  --surface-3: #262d3f;
+  --line: rgba(255, 255, 255, .07);
+  --line-2: rgba(255, 255, 255, .16);
+  --text: #f2f4f8;
+  --muted: #9ba4b6;
+  --faint: #667087;
+  --red: #d9363e;
+  --gold: #f4b73f;
+  --green: #2ec27e;
+  --blue: #3f7ff0;
+  --purple: #8b5cf6;
+  --hp: #35c985;
+  --sta: #4c95ff;
+  --text-dark: #15110a;
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.25);
+  --shadow-md: 0 2px 4px rgba(0,0,0,.35), 0 10px 26px rgba(0,0,0,.38);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,.45), 0 22px 56px rgba(0,0,0,.55);
+  --font-display: "Secular One", "Rubik", system-ui, sans-serif;
+  --font-body: "Rubik", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  background: radial-gradient(1100px 520px at 50% -12%, #1b2130 0%, rgba(27,33,48,0) 62%), var(--bg);
+  background-color: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+}
+#app { max-width: 1080px; margin: 0 auto; padding-inline: 16px; padding-block: 16px 40px; min-height: 100%; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h3 { font-size: 17px; font-weight: 700; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.center { text-align: center; }
+.num { font-variant-numeric: tabular-nums; }
+.gold { color: var(--gold); }
+.screen { display: flex; flex-direction: column; gap: 16px; animation: enter .35s ease both; }
+@keyframes enter { from { opacity: .4; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ----- כרטיסים וכפתורים ----- */
+.card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.04); padding: 18px; }
+
+.btn {
+  font: inherit; font-weight: 700; color: var(--text); background: var(--surface-3);
+  border: 0; border-radius: var(--r-md); padding: 11px 18px; min-height: 46px; cursor: pointer;
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  position: relative; overflow: hidden; text-align: center;
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.1);
+  transition: transform .14s cubic-bezier(.3,.7,.4,1.6), filter .14s;
+}
+.btn small { font-weight: 500; font-size: 12px; opacity: .85; }
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: scale(.95); filter: brightness(.9); }
+.btn:focus-visible, .swatch:focus-visible, .chip:focus-visible, .tab:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.btn:disabled { opacity: .42; cursor: not-allowed; transform: none; filter: none; }
+.btn-red { background: var(--red); color: #fff; }
+.btn-green { background: var(--green); color: var(--text-dark); }
+.btn-gold { background: var(--gold); color: var(--text-dark); }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-purple { background: var(--purple); color: #fff; }
+.btn-ghost { background: transparent; box-shadow: inset 0 0 0 1.5px var(--line-2); }
+.btn-danger { background: transparent; color: #ff8a8f; box-shadow: inset 0 0 0 1.5px rgba(255,120,125,.4); }
+.btn-lg { font-family: var(--font-display); font-weight: 400; font-size: 20px; padding: 14px 26px; min-height: 58px; letter-spacing: .3px; }
+.btn-lg small { font-family: var(--font-body); }
+.btn-sm { min-height: 38px; padding: 7px 14px; font-size: 14px; }
+.btn-icon { width: 46px; padding: 0; font-size: 20px; }
+.sweep::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.3) 50%, transparent 65%);
+  transform: translateX(-130%); transition: transform .7s ease;
+}
+.sweep:hover::after { transform: translateX(130%); }
+
+.bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; flex: 1; }
+.bar i { display: block; height: 100%; border-radius: inherit; background: var(--sta); transition: width .4s ease; }
+.bar i.low { background: #e7883a; }
+.bar.stat i { background: var(--green); }
+
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+.nick { color: var(--gold); font-weight: 500; }
+.bonus { font-size: 12px; font-weight: 700; color: var(--green); background: rgba(46,194,126,.12); padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+
+/* חגורה */
+.belt {
+  display: inline-block; width: 34px; height: 14px; border-radius: 4px; vertical-align: middle; position: relative;
+  background: linear-gradient(90deg, #7a1d22 0 22%, #f4b73f 22% 78%, #7a1d22 78%);
+  box-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.belt::after { content: ""; position: absolute; inset: 2px 11px; border-radius: 3px; background: #ffe39a; box-shadow: inset 0 0 0 1.5px #b77e12; }
+.belt.sm { width: 26px; height: 11px; }
+.belt.sm::after { inset: 2px 8px; }
+
+/* ----- מסך פתיחה ----- */
+.title-screen { align-items: center; text-align: center; padding-top: 24px; position: relative; min-height: calc(100vh - 60px); justify-content: center; }
+.aurora { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+.aurora i { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(90px); opacity: .22; animation: drift 22s ease-in-out infinite alternate; }
+.aurora i:nth-child(1) { background: #d9363e; top: -25vmax; right: -15vmax; }
+.aurora i:nth-child(2) { background: #f4b73f; bottom: -30vmax; left: -20vmax; opacity: .12; animation-duration: 28s; }
+.aurora i:nth-child(3) { background: #3f7ff0; top: 30%; left: 35%; width: 36vmax; height: 36vmax; opacity: .1; animation-duration: 34s; }
+@keyframes drift { to { transform: translate(6vmax, 4vmax) scale(1.1); } }
+.title-duo { width: min(680px, 100%); aspect-ratio: 960 / 440; height: auto; display: block; border-radius: 20px; box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255,255,255,.05); }
+.logo {
+  font-family: var(--font-display); font-weight: 400; font-size: clamp(52px, 12vw, 104px); line-height: .95;
+  background: linear-gradient(100deg, #fff 0%, #fff 38%, #ffd27a 50%, #fff 62%, #fff 100%);
+  background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shimmer 6s linear infinite;
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,.6));
+}
+@keyframes shimmer { from { background-position: 125% 0; } to { background-position: -125% 0; } }
+.tagline { color: var(--muted); font-size: 17px; max-width: 34ch; }
+.title-actions { display: flex; flex-direction: column; gap: 12px; width: min(340px, 100%); margin-top: 8px; }
+.fine { color: var(--faint); font-size: 13px; }
+
+/* ----- יצירת לוחם ----- */
+.topbar { display: flex; align-items: center; gap: 12px; }
+.topbar h2 { font-family: var(--font-display); font-weight: 400; font-size: 28px; }
+.create-grid { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.preview-card { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; align-items: center; gap: 10px;
+  background: radial-gradient(circle at 50% 85%, #2a1a22 0%, var(--surface) 70%); }
+.preview-lg { width: 100%; height: 380px; display: block; }
+.pv-name { font-family: var(--font-display); font-size: 24px; text-align: center; min-height: 36px; }
+.options { display: flex; flex-direction: column; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.flabel { font-size: 13px; font-weight: 700; color: var(--muted); }
+.opt { font-weight: 400; color: var(--faint); }
+input {
+  font: inherit; color: var(--text); background: var(--surface-2); border: 0; border-radius: var(--r-sm);
+  padding: 12px 14px; box-shadow: inset 0 0 0 1.5px var(--line); width: 100%;
+}
+input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--gold); }
+.swatches, .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatch {
+  width: 38px; height: 38px; border-radius: 50%; border: 0; cursor: pointer; background: var(--c);
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,.25), 0 2px 5px rgba(0,0,0,.4);
+  transition: transform .14s cubic-bezier(.3,.7,.4,1.6);
+}
+.swatch:active { transform: scale(.9); }
+.swatch.on { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--gold); transform: scale(1.06); }
+.chip {
+  font: inherit; font-weight: 500; color: var(--text); background: var(--surface-2); border: 0; cursor: pointer;
+  border-radius: 99px; padding: 8px 16px; box-shadow: inset 0 0 0 1.5px var(--line);
+  transition: transform .14s cubic-bezier(.3,.7,.4,1.6);
+}
+.chip:active { transform: scale(.93); }
+.chip.on { background: var(--gold); color: var(--text-dark); font-weight: 700; box-shadow: none; }
+.form-err { color: #ff8a8f; font-weight: 500; }
+
+/* ----- מרכז הקריירה ----- */
+.profile-bar { display: flex; align-items: center; gap: 16px; padding: 12px 18px; }
+.preview-sm { width: 92px; height: 132px; flex: none; }
+.pb-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.pb-name { font-family: var(--font-display); font-size: 26px; line-height: 1.1; }
+.pb-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 14px; align-items: center; }
+.pb-meta b { color: var(--text); }
+.rank-pill { background: rgba(63,127,240,.16); color: #9cc0ff; font-weight: 700; font-size: 12px; padding: 3px 10px; border-radius: 99px; }
+.energy { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); max-width: 340px; }
+.energy b { color: var(--text); min-width: 28px; }
+.pb-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
+.money { font-family: var(--font-display); font-size: 30px; color: var(--gold); line-height: 1; }
+.ovr { display: flex; align-items: baseline; gap: 6px; color: var(--muted); font-size: 12px; }
+.ovr b { font-size: 20px; color: var(--text); }
+.belts { display: flex; gap: 4px; }
+
+.tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; background: var(--surface); padding: 6px; border-radius: var(--r-md); box-shadow: var(--shadow-sm); }
+.tab {
+  font: inherit; font-weight: 700; color: var(--muted); background: transparent; border: 0; border-radius: 10px;
+  padding: 11px 6px; cursor: pointer; transition: transform .14s cubic-bezier(.3,.7,.4,1.6), background .2s, color .2s;
+}
+.tab:active { transform: scale(.95); }
+.tab.on.t-red { background: var(--red); color: #fff; }
+.tab.on.t-green { background: var(--green); color: var(--text-dark); }
+.tab.on.t-gold { background: var(--gold); color: var(--text-dark); }
+.tab.on.t-blue { background: var(--blue); color: #fff; }
+.tab.on.t-purple { background: var(--purple); color: #fff; }
+.tab-body { animation: enter .25s ease both; }
+
+/* קרבות */
+.fight-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.next-fight { display: flex; flex-direction: column; gap: 14px; }
+.next-fight.is-title { box-shadow: var(--shadow-md), inset 0 0 0 1.5px rgba(244,183,63,.45); }
+.nf-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.is-title .eyebrow { color: var(--gold); }
+.tier { font-size: 12px; font-weight: 700; color: #ff9da1; background: rgba(217,54,62,.15); padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
+.nf-body { display: flex; gap: 14px; align-items: center; }
+.preview-opp { width: 150px; height: 210px; flex: none; }
+.nf-info { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 0; }
+.nf-info h3 { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1.05; }
+.style-tag { font-size: 12px; font-weight: 700; background: var(--surface-3); padding: 3px 10px; border-radius: 99px; }
+.facts { display: flex; gap: 20px; margin: 4px 0 0; }
+.facts div { display: flex; flex-direction: column; }
+.facts dt { font-size: 12px; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 800; font-size: 18px; }
+.tape { display: flex; flex-direction: column; gap: 7px; background: var(--surface-2); border-radius: var(--r-md); padding: 12px 14px; }
+.tape-head { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--muted); }
+.tape-row { display: grid; grid-template-columns: 26px 1fr 64px 1fr 26px; align-items: center; gap: 8px; font-size: 13px; }
+.tl { text-align: center; color: var(--muted); }
+.tv { text-align: center; font-weight: 700; color: var(--muted); }
+.tv.up { color: var(--text); }
+.tb { height: 7px; background: rgba(255,255,255,.07); border-radius: 99px; overflow: hidden; display: flex; }
+.tb i { display: block; height: 100%; border-radius: inherit; }
+.tb.you i { background: var(--blue); }
+.tb.them { justify-content: flex-end; }
+.tb.them i { background: var(--red); }
+.warn { background: rgba(231,136,58,.12); color: #ffb27a; border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
+.ladder { display: flex; flex-direction: column; gap: 12px; }
+.ladder ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ladder li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r-sm); font-size: 14px; }
+.ladder .ln { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--surface-3); flex: none; }
+.ladder .lname { flex: 1; min-width: 0; }
+.ladder .lname small { color: var(--faint); }
+.ladder .lstat { font-size: 12px; color: var(--faint); }
+.ladder li.done .ln { background: var(--green); color: var(--text-dark); }
+.ladder li.done .lstat { color: var(--green); }
+.ladder li.cur { background: rgba(217,54,62,.13); }
+.ladder li.cur .ln { background: var(--red); color: #fff; }
+.ladder li.cur .lstat { color: #ff9da1; font-weight: 700; }
+.ladder li.locked { color: var(--faint); }
+.champ-note { font-size: 14px; color: var(--muted); background: rgba(244,183,63,.1); border-radius: var(--r-sm); padding: 10px 12px; }
+
+/* אימונים */
+.train-grid, .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.train-card, .shop-card { display: flex; flex-direction: column; gap: 10px; }
+.train-card .btn, .shop-card .btn { margin-top: auto; }
+.tc-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.stat-name { font-size: 12px; font-weight: 700; color: var(--green); }
+.lvl { display: flex; align-items: baseline; gap: 6px; }
+.lvl b { font-family: var(--font-display); font-weight: 400; font-size: 34px; line-height: 1; }
+.lvl .of { color: var(--faint); font-size: 13px; }
+.lvl .bonus { margin-inline-start: auto; }
+.train-card p, .shop-card p { font-size: 13px; }
+.rest-card { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 10px; }
+.rest-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.rest-actions .btn { flex: 1 1 200px; }
+
+/* חנות */
+.sec-title { font-size: 14px; color: var(--muted); font-weight: 700; margin: 4px 2px 10px; }
+.shop-grid + .sec-title { margin-top: 22px; }
+.sc-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pips { display: flex; gap: 4px; }
+.pips i { width: 16px; height: 6px; border-radius: 99px; background: rgba(255,255,255,.1); }
+.pips i.on { background: var(--gold); }
+.sc-now { font-size: 14px; color: var(--muted); }
+.sc-now b { color: var(--text); }
+.sc-next { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; background: var(--surface-2); padding: 10px 12px; border-radius: var(--r-sm); }
+.maxed { color: var(--gold); font-weight: 700; font-size: 14px; margin-top: auto; }
+.extra h3 { font-size: 18px; }
+
+/* מלתחה */
+.wardrobe { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.wr-preview { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+  background: radial-gradient(circle at 50% 85%, #231a38 0%, var(--surface) 70%); }
+.preview-wr { width: 100%; height: 330px; display: block; }
+.wr-try { font-size: 14px; color: var(--muted); }
+.wr-try b { color: #c4b1ff; }
+.small { font-size: 12px; }
+.wr-list { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.wr-slot .sec-title { margin-bottom: 8px; }
+.wr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+.wr-item {
+  background: var(--surface); border-radius: var(--r-md); padding: 10px; display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.04); cursor: pointer; text-align: center;
+  transition: transform .14s cubic-bezier(.3,.7,.4,1.6), box-shadow .2s;
+}
+.wr-item:active { transform: scale(.96); }
+.wr-item canvas { width: 100%; height: 92px; display: block; border-radius: 10px; background: radial-gradient(circle at 50% 60%, #242a3a, #171b25); }
+.wr-item.trying { box-shadow: var(--shadow-sm), inset 0 0 0 2px var(--purple); }
+.wr-item.worn { box-shadow: var(--shadow-sm), inset 0 0 0 2px var(--green); }
+.wr-name { font-weight: 700; font-size: 14px; line-height: 1.25; }
+.wr-state { font-size: 12px; color: var(--faint); }
+.wr-item.worn .wr-state { color: var(--green); }
+.wr-item .btn { margin-top: 4px; }
+
+/* פרופיל */
+.profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.profile-grid .card { display: flex; flex-direction: column; gap: 12px; }
+.profile-grid .settings { grid-column: 1 / -1; }
+.stat-list { display: flex; flex-direction: column; gap: 10px; }
+.sl-row { display: grid; grid-template-columns: 64px 1fr 30px; align-items: center; gap: 10px; font-size: 14px; }
+.sl-row b { text-align: left; }
+.belt-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.belt-list li { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--gold); }
+.history { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.history li { display: grid; grid-template-columns: 28px 1fr auto; grid-template-areas: "r n p" "r m p"; column-gap: 10px; align-items: center; padding: 8px 10px; background: var(--surface-2); border-radius: var(--r-sm); }
+.history .res { grid-area: r; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+.history .w .res { background: var(--green); color: var(--text-dark); }
+.history .l .res { background: var(--red); color: #fff; }
+.history .hn { grid-area: n; font-weight: 700; font-size: 14px; }
+.history .hm { grid-area: m; font-size: 12px; color: var(--muted); }
+.history .hp { grid-area: p; color: var(--gold); font-weight: 700; font-size: 14px; }
+.history .empty { display: block; color: var(--muted); background: none; padding: 0; font-size: 14px; }
+.set-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ----- לפני הקרב ----- */
+.vs-screen { align-items: center; }
+.vs-stage { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 8px; width: 100%; max-width: 760px; }
+.vs-side { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; }
+.vs-side canvas { width: 100%; max-width: 260px; height: 320px; }
+.vs-side h3 { font-family: var(--font-display); font-weight: 400; font-size: 26px; }
+.vs-side span { color: var(--muted); font-size: 14px; }
+.vs-side.you h3 { color: #9cc0ff; }
+.vs-side.them h3 { color: #ff9da1; }
+.vs-mid { display: flex; flex-direction: column; align-items: center; gap: 4px; align-self: center; }
+.vs { font-family: var(--font-display); font-size: 56px; line-height: 1; color: var(--gold); font-style: italic; text-shadow: 0 4px 18px rgba(244,183,63,.35); }
+.vs-mid small { color: var(--muted); white-space: nowrap; }
+.title-bout { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--gold); }
+.title-bout.big { font-family: var(--font-display); font-weight: 400; font-size: 22px; justify-content: center; }
+.how { width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 12px; }
+.keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px 16px; font-size: 14px; }
+.keys div { display: flex; align-items: center; gap: 6px; }
+.keys span { color: var(--muted); margin-inline-start: 4px; }
+kbd { font-family: var(--font-body); font-weight: 700; font-size: 12px; min-width: 26px; text-align: center; padding: 3px 7px; border-radius: 6px; background: var(--surface-3); box-shadow: inset 0 -2px 0 rgba(0,0,0,.35); }
+.tip { font-size: 13px; }
+.vs-actions { display: flex; gap: 12px; }
+
+/* ----- הקרב ----- */
+.fight-screen { gap: 10px; }
+.hud { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.plate { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.pl-name { font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plate.right .pl-name { text-align: left; }
+.plate:not(.right) .pl-name { text-align: right; }
+.kds { color: var(--red); letter-spacing: 2px; font-size: 12px; }
+.hbar { position: relative; height: 16px; background: rgba(255,255,255,.08); border-radius: 6px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.5); }
+.hbar.sta { height: 7px; border-radius: 99px; }
+.hbar i { position: absolute; top: 0; bottom: 0; left: 0; display: block; border-radius: inherit; }
+.plate.right .hbar i { left: auto; right: 0; }
+.hbar.hp .lag { background: rgba(255,255,255,.75); }
+.hbar.hp .cur { background: linear-gradient(180deg, #4fe09c, var(--hp)); }
+.hbar.sta i { background: var(--sta); }
+.hbar.sta i.low { background: #e7883a; }
+.clock { text-align: center; background: var(--surface); border-radius: var(--r-md); padding: 6px 14px; box-shadow: var(--shadow-sm); }
+#rnd { font-size: 12px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+#tm { font-family: var(--font-display); font-size: 26px; line-height: 1.1; }
+.ring-wrap { position: relative; border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-lg); background: #07080c; }
+#ring { display: block; width: 100%; aspect-ratio: 960 / 440; max-width: 100%; touch-action: none; }
+.pause-btn { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(0,0,0,.45); color: #fff; cursor: pointer; font-size: 12px; letter-spacing: -2px; }
+.pause-btn:active { transform: scale(.92); }
+.pause-ov { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5,6,10,.6); backdrop-filter: blur(3px); }
+.pause-ov .card { display: flex; flex-direction: column; gap: 10px; min-width: 240px; text-align: center; }
+.touch { display: flex; justify-content: space-between; gap: 12px; user-select: none; -webkit-user-select: none; touch-action: none; }
+.pad { display: flex; gap: 8px; flex-wrap: wrap; }
+.pad-act { justify-content: flex-end; }
+.touch button {
+  font: inherit; font-weight: 700; font-size: 14px; color: var(--text); border: 0; cursor: pointer;
+  min-width: 62px; height: 58px; padding: 0 12px; border-radius: 16px; background: var(--surface-3);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.1);
+  transition: transform .08s, filter .08s; touch-action: none;
+}
+.touch button:active, .touch button.pressed { transform: scale(.92); filter: brightness(1.25); }
+.pad-move button { font-size: 20px; min-width: 64px; }
+.touch .k-hit { background: var(--red); color: #fff; }
+.touch .k-def { background: var(--blue); color: #fff; }
+.legend { text-align: center; color: var(--faint); font-size: 13px; }
+@media (hover: hover) and (pointer: fine) { .touch { display: none; } }
+@media (hover: none), (pointer: coarse) { .legend { display: none; } }
+
+/* ----- תוצאה ----- */
+.result { align-items: center; text-align: center; position: relative; }
+.result-fighter { width: 220px; height: 280px; }
+.result-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(54px, 13vw, 96px); line-height: 1; }
+.result.won .result-title { color: var(--gold); text-shadow: 0 6px 30px rgba(244,183,63,.35); }
+.result.lost .result-title { color: #ff9da1; }
+.result-sub { color: var(--muted); font-size: 16px; }
+.result-card { width: min(420px, 100%); display: flex; flex-direction: column; gap: 2px; text-align: start; }
+.rc-row { display: flex; justify-content: space-between; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: 15px; }
+.rc-row:last-child { border-bottom: 0; }
+.result > p.muted { max-width: 44ch; }
+
+/* ----- הודעות ----- */
+#toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 30px);
+  background: var(--surface-3); color: var(--text); font-weight: 700; padding: 12px 20px; border-radius: 99px;
+  box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 50; max-width: calc(100% - 32px); text-align: center;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+#toast.good { background: var(--green); color: var(--text-dark); }
+#toast.gold { background: var(--gold); color: var(--text-dark); }
+
+/* ----- רספונסיבי ----- */
+@media (max-width: 820px) {
+  .create-grid, .fight-grid, .profile-grid, .wardrobe { grid-template-columns: 1fr; }
+  .wr-preview { position: static; }
+  .preview-wr { height: 260px; }
+  .preview-card { position: static; }
+  .preview-lg { height: 300px; }
+}
+@media (max-width: 560px) {
+  .field-row { grid-template-columns: 1fr; }
+  .profile-bar { flex-wrap: wrap; gap: 10px; }
+  .preview-sm { width: 70px; height: 100px; }
+  .pb-side { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
+  .pb-name { font-size: 22px; }
+  .nf-body { flex-direction: column; align-items: stretch; }
+  .preview-opp { width: 100%; height: 190px; }
+  .vs-side canvas { height: 220px; }
+  .vs { font-size: 38px; }
+  .vs-side h3 { font-size: 20px; }
+  .tab { font-size: 13px; padding: 10px 2px; }
+  .tabs { gap: 4px; padding: 5px; }
+  .wr-grid { grid-template-columns: repeat(2, 1fr); }
+  .touch button { min-width: 54px; height: 54px; padding: 0 8px; font-size: 13px; }
+  .pad-move button { min-width: 54px; }
+  .hud { gap: 8px; }
+  #tm { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ----- סגנונות לחימה ----- */
+.style-pill { background: rgba(139,92,246,.18); color: #c4b1ff; font-weight: 700; font-size: 12px; padding: 3px 10px; border-radius: 99px; }
+.styles-title { margin-top: 26px; }
+.sec-sub { font-size: 13px; margin: -6px 2px 12px; }
+.styles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.style-card { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; }
+.style-card .btn, .style-card .st-active { margin-top: auto; }
+.style-card.active { box-shadow: var(--shadow-md), inset 0 0 0 2px var(--purple); }
+.perk { font-size: 13px; color: var(--muted); }
+.st-active { color: #c4b1ff; font-weight: 700; font-size: 14px; text-align: center; padding: 8px 0; }
+.btn:not(:has(small)) { flex-direction: row; gap: 5px; }
+
+/* ===== טלפון ===== */
+html { -webkit-text-size-adjust: 100%; }
+button, .wr-item, .chip, .swatch, .tab { touch-action: manipulation; }
+.touch, .touch * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.rotate-hint { display: none; text-align: center; color: var(--faint); font-size: 13px; }
+.pad-move { align-items: flex-end; }
+.pad-move button { width: 70px; height: 70px; border-radius: 50%; }
+.pad-act { display: grid; grid-template-columns: repeat(3, 70px); grid-template-areas: "blk dod upp" "jab jab crs"; gap: 8px; }
+.pad-act button { min-width: 0; padding: 0 4px; height: 58px; }
+.k-blk { grid-area: blk; } .k-dod { grid-area: dod; } .k-upp { grid-area: upp; } .k-jab { grid-area: jab; } .k-crs { grid-area: crs; }
+.touch .k-jab { height: 62px; font-size: 16px; }
+
+@media (pointer: coarse) and (orientation: portrait) {
+  .rotate-hint { display: block; }
+}
+@media (max-width: 400px) {
+  .pad-act { grid-template-columns: repeat(3, 56px); gap: 6px; }
+  .pad-move button { width: 56px; height: 56px; }
+}
+
+/* טלפון לרוחב: הזירה על כל המסך והכפתורים צפים מעליה */
+@media (orientation: landscape) and (max-height: 540px) and (pointer: coarse) {
+  body:has(.fight-screen) { overflow: hidden; }
+  #app:has(.fight-screen) { padding: 0; max-width: none; }
+  .fight-screen {
+    position: fixed; inset: 0; gap: 4px; background: #07080c; animation: none;
+    padding: calc(4px + env(safe-area-inset-top, 0px)) calc(8px + env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) calc(8px + env(safe-area-inset-left, 0px));
+  }
+  .hud { gap: 8px; }
+  .pl-name { font-size: 12px; }
+  .hbar { height: 11px; }
+  .hbar.sta { height: 5px; }
+  .clock { padding: 2px 10px; }
+  #rnd { font-size: 10px; }
+  #tm { font-size: 18px; }
+  .ring-wrap { flex: 1; min-height: 0; border-radius: 12px; display: flex; justify-content: center; }
+  #ring { width: auto; height: 100%; max-width: 100%; }
+  .touch {
+    position: absolute; pointer-events: none; align-items: flex-end;
+    left: calc(10px + env(safe-area-inset-left, 0px)); right: calc(10px + env(safe-area-inset-right, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  .touch button { pointer-events: auto; opacity: .85; }
+  .touch .k-hit { background: rgba(217,54,62,.82); }
+  .touch .k-def { background: rgba(63,127,240,.82); }
+  .pad-move button { background: rgba(38,45,63,.85); width: 64px; height: 64px; }
+  .pad-act { grid-template-columns: repeat(3, 60px); gap: 6px; }
+  .pad-act button { height: 50px; }
+  .touch .k-jab { height: 54px; }
+  .legend, .rotate-hint { display: none; }
+}
+
+</style>
+<div id="app" dir="rtl" lang="he"></div>
+<script>document.documentElement.dir = "rtl"; document.documentElement.lang = "he";</script>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+// ===== נתוני המשחק =====
+const SAVE_KEY = 'derech-lahagora-v1';
+const STAT_MAX = 60;
+const TRAIN_ENERGY = 20;
+
+const LOOK_OPTIONS = {
+  skin: ['#f5d2b5', '#e6b08a', '#c98c5f', '#a86b40', '#7c4a2a', '#4f2e1b'],
+  hairStyle: [
+    { id: 'bald', name: 'קרחת' }, { id: 'buzz', name: 'קצוץ' }, { id: 'short', name: 'קצר' },
+    { id: 'mohawk', name: 'מוהוק' }, { id: 'afro', name: 'אפרו' }, { id: 'pony', name: 'קוקו' },
+    { id: 'dreads', name: 'ראסטות' }
+  ],
+  hairColor: ['#15110f', '#3e2718', '#7a4c24', '#c9a25a', '#a8392a', '#dcd8cf', '#2f64d6'],
+  beard: [{ id: 'none', name: 'ללא' }, { id: 'stubble', name: 'זיפים' }, { id: 'beard', name: 'זקן' }, { id: 'mustache', name: 'שפם' }],
+  cloth: ['#d23a40', '#2f6fdb', '#1f9d62', '#e3b23c', '#7b4fd6', '#1b1d22', '#eeeeee', '#e0662b', '#e05a9c', '#14a3b8']
+};
+
+const DEFAULT_LOOK = { skin: '#c98c5f', hairStyle: 'short', hairColor: '#15110f', beard: 'none', shorts: '#d23a40', gloves: '#d23a40', shoes: '#1b1d22' };
+
+const STAT_DEFS = [
+  { id: 'power',   name: 'כוח',    train: 'שק כבד',          desc: 'אגרופים כבדים יותר שמורידים יותר חיים.' },
+  { id: 'speed',   name: 'מהירות', train: 'כדור מהיר',        desc: 'אגרופים מהירים ותזוזה זריזה בזירה.' },
+  { id: 'stamina', name: 'סיבולת', train: 'ריצת בוקר',        desc: 'מאגר אנרגיה גדול יותר והתאוששות מהירה.' },
+  { id: 'defense', name: 'הגנה',   train: 'ספארינג הגנתי',    desc: 'חסימות אטומות יותר ופחות נזק מכל מכה.' },
+  { id: 'chin',    name: 'ספיגה',  train: 'חיזוק צוואר ובטן', desc: 'יותר חיים, וקל יותר לקום מנוקדאון.' }
+];
+
+const GEAR = [
+  { id: 'gloves', stat: 'power',   name: 'כפפות',        tiers: ['כפפות אימון', 'כפפות עור 10oz', 'כפפות מקצוענים', 'כפפות אליפות'] },
+  { id: 'shoes',  stat: 'speed',   name: 'נעלי אגרוף',   tiers: ['נעלי התעמלות', 'נעלי אגרוף בסיסיות', 'נעלי מקצוענים', 'נעלי אליפות קלות'] },
+  { id: 'mask',   stat: 'stamina', name: 'ציוד סיבולת',  tiers: ['חבל קפיצה', 'מסכת אימון גובה', 'שעון דופק חכם', 'מחנה אימונים בהרים'] },
+  { id: 'wraps',  stat: 'defense', name: 'תחבושות',      tiers: ['תחבושות בד', 'תחבושות ג׳ל', 'תחבושות מקצועיות', 'תחבושות אליפות'] },
+  { id: 'guard',  stat: 'chin',    name: 'מגן שיניים',   tiers: ['מגן בסיסי', 'מגן מותאם', 'מגן כפול', 'מגן טיטניום'] }
+];
+const GEAR_PRICE = [0, 250, 800, 2200];
+const GEAR_BONUS = [0, 3, 6, 10];
+
+const EXTRAS = [
+  { id: 'drink',   name: 'משקה איזוטוני',  price: 60,   desc: '‎+40 אנרגיה מיד.' },
+  { id: 'massage', name: 'עיסוי ספורטאים', price: 150,  desc: 'אנרגיה מלאה בלי לבזבז שבוע.' },
+  { id: 'coach',   name: 'מאמן מקצועי',     price: 1500, desc: 'כל אימון נותן סיכוי לשיפור כפול. קנייה חד-פעמית.', once: true }
+];
+
+// ===== סגנונות לחימה =====
+// m = מכפילי סטטיסטיקה ליריבים · ai = התנהגות בזירה · perk = יתרון/חולשה (גם לשחקן, אחרי שלמד את הסגנון)
+const AI_BASE = { aggr: .6, near: [100, 132], far: [140, 178], tempo: 1, react: 0, blockPref: .72, combo: .25, comboLen: 1, upper: .28, jab: .55, retreat: false, punish: 1, dodgeCounter: false };
+const STYLES = {
+  balanced:  { name: 'מאוזן', price: 0,
+    desc: 'בלי נקודות תורפה בולטות. קרב טכני.', perkDesc: 'בלי יתרונות ובלי חולשות.',
+    m: { power: 1, speed: 1, stamina: 1, defense: 1, chin: 1 }, ai: {}, perk: {} },
+  slugger:   { name: 'מכה כבדה', price: 600,
+    desc: 'לוחץ קדימה ומחפש את המכה הגדולה. תזוז ותעניש.', perkDesc: 'נזק +15%, אבל כל אגרוף עולה 10% יותר סיבולת.',
+    m: { power: 1.3, speed: .85, stamina: 1, defense: .8, chin: 1.15 },
+    ai: { aggr: .8, tempo: .9, react: -.05, blockPref: .8, combo: .2, upper: .4, jab: .35, punish: .8 }, perk: { dmg: 1.15, sta: 1.1 } },
+  speedster: { name: 'מהיר', price: 600,
+    desc: 'נכנס ויוצא עם ג׳אבים. תחסום ותסגור מרחק.', perkDesc: 'אגרופים ותזוזה מהירים יותר, נזק -8%.',
+    m: { power: .85, speed: 1.3, stamina: 1.1, defense: 1, chin: .85 },
+    ai: { aggr: .5, tempo: .7, react: .05, blockPref: .5, combo: .35, upper: .15, jab: .7, retreat: true }, perk: { spd: .88, dmg: .92, move: 1.1 } },
+  tank:      { name: 'טנק', price: 800,
+    desc: 'סופג הרבה ומתקדם לאט. תבנה סיבולת לפני הקרב.', perkDesc: 'חיים +15% וחסימה אטומה יותר, אבל תזוזה איטית.',
+    m: { power: 1.05, speed: .8, stamina: 1.05, defense: 1.15, chin: 1.35 },
+    ai: { aggr: .72, tempo: 1.1, blockPref: .9, combo: .2, upper: .3, jab: .5, punish: .9 }, perk: { hp: 1.15, block: .75, move: .9 } },
+  counter:   { name: 'מתקיף-נגד', price: 900,
+    desc: 'מחכה לטעות שלך. אל תזרוק מכות סרק.', perkDesc: 'קאונטר חזק בהרבה (×1.75), התחמקות מתאוששת מהר.',
+    m: { power: 1, speed: 1.1, stamina: .95, defense: 1.3, chin: .9 },
+    ai: { aggr: .4, tempo: 1.25, react: .12, blockPref: .55, combo: .2, upper: .3, jab: .5, punish: 1.6, dodgeCounter: true }, perk: { counter: 1.75, dodgeCd: .7 } },
+  brawler:   { name: 'מתגושש', price: 900,
+    desc: 'זורק סדרות של 3-4 אגרופים ברצף. חסום את הסדרה ותחזיר.', perkDesc: 'כל פגיעה ברצף מוסיפה 12% נזק (עד +36%), אבל השמירה חלשה יותר.',
+    m: { power: 1.15, speed: 1, stamina: 1.1, defense: .75, chin: 1.1 },
+    ai: { aggr: .85, tempo: 1.05, react: -.08, blockPref: .85, combo: .55, comboLen: 3, upper: .35, jab: .45, punish: .7 }, perk: { chain: .12, block: 1.3 } },
+  outboxer:  { name: 'בוקסר מרחוק', price: 1000,
+    desc: 'שומר מרחק ודוקר בג׳אבים. תתקרב אליו והוא בבעיה.', perkDesc: 'טווח ארוך יותר לכל אגרוף, נזק -5%.',
+    m: { power: .9, speed: 1.15, stamina: 1.05, defense: 1.15, chin: .85 },
+    ai: { aggr: .3, near: [125, 150], far: [160, 195], tempo: .8, react: .08, blockPref: .6, combo: .2, upper: .1, jab: .8, retreat: true, punish: 1.1 }, perk: { reach: 18, dmg: .95 } },
+  pressure:  { name: 'לוחץ', price: 1100,
+    desc: 'לא נותן לך לנשום ולא נסוג אף פעם. תנצל את זה שהוא תמיד מגיע.', perkDesc: 'אגרופים זולים ב-15% וסיבולת מתמלאת מהר יותר.',
+    m: { power: 1.05, speed: .95, stamina: 1.35, defense: .9, chin: 1.05 },
+    ai: { aggr: .95, near: [95, 120], tempo: .75, blockPref: .8, combo: .4, comboLen: 2, upper: .3, jab: .5, punish: .9 }, perk: { sta: .85, regen: 1.25 } },
+  dodger:    { name: 'מתחמק', price: 1200,
+    desc: 'כמעט אי אפשר לפגוע בו, ומחזיר מיד אחרי כל התחמקות. תזרוק ג׳אבים מהירים.', perkDesc: 'התחמקות זולה ומהירה, והאגרוף שאחריה חזק ב-30%.',
+    m: { power: .9, speed: 1.25, stamina: 1, defense: 1.2, chin: .8 },
+    ai: { aggr: .5, react: .15, blockPref: .25, combo: .3, upper: .25, jab: .55, punish: 1.3, dodgeCounter: true }, perk: { dodgeCd: .55, dodgeSta: .5, dodgeHit: .3 } },
+  giant:     { name: 'ענק', price: 1500,
+    desc: 'גבוה, כבד ואיטי. מכה אחת שלו שווה שלוש. אל תעמוד מולו.', perkDesc: 'חיים +25% ונזק +10%, אבל אגרופים ותזוזה איטיים.',
+    m: { power: 1.25, speed: .75, stamina: .95, defense: 1, chin: 1.3 },
+    ai: { aggr: .7, near: [110, 140], tempo: 1.3, react: -.05, blockPref: .85, combo: .15, upper: .35, jab: .45, punish: .8 }, perk: { hp: 1.25, dmg: 1.1, spd: 1.12, move: .85, reach: 10 } }
+};
+
+const L = (skin, hairStyle, hairColor, beard, shorts, gloves, shoes, outfit = {}) => ({ skin, hairStyle, hairColor, beard, shorts, gloves, shoes, outfit });
+const T1 = 'דרג אזורי', T2 = 'דרג לאומי', T3 = 'דרג עולמי';
+
+const OPPONENTS = [
+  { name: 'אבי לוי',        nick: 'הבלון',      level: 8,  style: 'balanced',  purse: 200,  rounds: 3, tier: T1, look: L('#e6b08a', 'short', '#3e2718', 'stubble', '#2f6fdb', '#2f6fdb', '#eeeeee') },
+  { name: 'יוסי מזרחי',     nick: 'הצועק',      level: 10, style: 'brawler',   purse: 280,  rounds: 3, tier: T1, look: L('#c98c5f', 'buzz', '#15110f', 'beard', '#1b1d22', '#e0662b', '#1b1d22', { face: 'paint' }) },
+  { name: 'סרגיי מורוז',    nick: 'הקיר',       level: 12, style: 'tank',      purse: 380,  rounds: 3, tier: T1, look: L('#f5d2b5', 'buzz', '#c9a25a', 'none', '#1b1d22', '#d23a40', '#1b1d22') },
+  { name: 'ריקו סאנצ׳ס',    nick: 'זיקוק',      level: 14, style: 'speedster', purse: 500,  rounds: 3, tier: T1, look: L('#c98c5f', 'mohawk', '#15110f', 'mustache', '#e3b23c', '#1b1d22', '#e3b23c', { head: 'bandana', tattoo: 'tribal' }) },
+  { name: 'טום אקרמן',      nick: 'הפרופסור',   level: 16, style: 'outboxer',  purse: 650,  rounds: 3, tier: T1, look: L('#f5d2b5', 'short', '#c9a25a', 'none', '#2f6fdb', '#eeeeee', '#2f6fdb', { top: 'tank_white' }) },
+  { name: 'מוטי ברזילי',    nick: 'הפטיש',      level: 19, style: 'slugger',   purse: 850,  rounds: 4, tier: T2, look: L('#e6b08a', 'bald', '#15110f', 'beard', '#1f9d62', '#1f9d62', '#1b1d22', { top: 'tank_black' }) },
+  { name: 'קנג׳י טנאקה',    nick: 'הצל',        level: 22, style: 'counter',   purse: 1100, rounds: 4, tier: T2, look: L('#f0c9a0', 'pony', '#15110f', 'none', '#eeeeee', '#d23a40', '#eeeeee', { head: 'band_white' }) },
+  { name: 'בוריס איבנוב',   nick: 'ההר',        level: 24, style: 'giant',     purse: 1350, rounds: 4, tier: T2, look: L('#f5d2b5', 'bald', '#3e2718', 'beard', '#1f9d62', '#1b1d22', '#1b1d22', { tattoo: 'sleeve' }) },
+  { name: 'ג׳מאל ווקר',     nick: 'רעם',        level: 26, style: 'pressure',  purse: 1650, rounds: 4, tier: T2, look: L('#4f2e1b', 'afro', '#15110f', 'stubble', '#7b4fd6', '#e3b23c', '#7b4fd6', { neck: 'chain', face: 'paint' }) },
+  { name: 'לוקאס פרירה',    nick: 'השועל',      level: 29, style: 'dodger',    purse: 2000, rounds: 5, tier: T2, look: L('#a86b40', 'dreads', '#3e2718', 'none', '#14a3b8', '#eeeeee', '#14a3b8', { tattoo: 'sleeve', pattern: 'pt_stripes' }) },
+  { name: 'ויקטור וולקוב',  nick: 'הצאר',       level: 33, style: 'tank',      purse: 2800, rounds: 5, tier: 'קרב אליפות', title: 'חגורת האליפות הלאומית', look: L('#f5d2b5', 'buzz', '#dcd8cf', 'beard', '#d23a40', '#e3b23c', '#d23a40', { robe: 'robe_red', pattern: 'pt_stars' }) },
+  { name: 'מתאו רוסי',      nick: 'הגלדיאטור',  level: 36, style: 'brawler',   purse: 3300, rounds: 5, tier: T3, look: L('#e6b08a', 'short', '#15110f', 'stubble', '#d23a40', '#eeeeee', '#d23a40', { neck: 'tags', tattoo: 'tribal', robe: 'robe_red' }) },
+  { name: 'חוסה מרטינס',    nick: 'אל טורו',    level: 38, style: 'pressure',  purse: 3800, rounds: 5, tier: T3, look: L('#a86b40', 'mohawk', '#15110f', 'mustache', '#e3b23c', '#d23a40', '#e3b23c', { pattern: 'pt_flames', head: 'band_red' }) },
+  { name: 'איתן ברק',       nick: 'הרובוט',     level: 40, style: 'outboxer',  purse: 4300, rounds: 5, tier: T3, look: L('#e6b08a', 'buzz', '#3e2718', 'none', '#eeeeee', '#2f6fdb', '#eeeeee', { pattern: 'pt_stripes', robe: 'robe_white' }) },
+  { name: 'דרייק ג׳ונסון',  nick: 'המלך',       level: 42, style: 'counter',   purse: 5000, rounds: 5, tier: T3, look: L('#7c4a2a', 'short', '#15110f', 'beard', '#1b1d22', '#e3b23c', '#e3b23c', { neck: 'chain', pattern: 'pt_gold', robe: 'robe_black' }) },
+  { name: 'יוקי מורי',      nick: 'הרוח',       level: 44, style: 'dodger',    purse: 5800, rounds: 5, tier: T3, look: L('#f0c9a0', 'pony', '#dcd8cf', 'none', '#1b1d22', '#7b4fd6', '#1b1d22', { head: 'band_white', pattern: 'pt_stars' }) },
+  { name: 'אולף סוונסון',   nick: 'הוויקינג',   level: 47, style: 'giant',     purse: 6800, rounds: 5, tier: T3, look: L('#f5d2b5', 'dreads', '#c9a25a', 'beard', '#2f6fdb', '#eeeeee', '#1b1d22', { tattoo: 'tribal', neck: 'chain' }) },
+  { name: 'אמקה אוקונקוו',  nick: 'טיטאן',      level: 50, style: 'slugger',   purse: 9000, rounds: 5, tier: 'קרב אליפות עולם', title: 'חגורת אלוף העולם', look: L('#4f2e1b', 'bald', '#15110f', 'mustache', '#e3b23c', '#1b1d22', '#e3b23c', { neck: 'chain', pattern: 'pt_flames', tattoo: 'tribal', robe: 'robe_black' }) }
+];
+const NATIONAL_TIER_AT = 5, WORLD_TIER_AT = 11;
+
+// ===== מלתחה: פריטי לבוש שנקנים בכסף של המשחק =====
+const WARDROBE_SLOTS = [
+  { id: 'top',     name: 'חולצות' },
+  { id: 'pattern', name: 'עיצוב מכנסיים' },
+  { id: 'head',    name: 'כיסוי ראש' },
+  { id: 'face',    name: 'פנים' },
+  { id: 'neck',    name: 'תכשיטים' },
+  { id: 'tattoo',  name: 'קעקועים' },
+  { id: 'robe',    name: 'חלוקי כניסה' }
+];
+const WARDROBE = [
+  { id: 'tank_white', slot: 'top', name: 'גופייה לבנה',     price: 120,  color: '#f2f2f2' },
+  { id: 'tank_black', slot: 'top', name: 'גופייה שחורה',    price: 120,  color: '#1d1f25' },
+  { id: 'tank_red',   slot: 'top', name: 'גופייה אדומה',    price: 150,  color: '#c9303a' },
+  { id: 'tank_camo',  slot: 'top', name: 'גופיית הסוואה',   price: 350,  color: '#4d5a36', camo: true },
+  { id: 'tank_gold',  slot: 'top', name: 'גופיית אליפות',   price: 900,  color: '#e3b23c', trim: '#1b1d22' },
+  { id: 'pt_stripes', slot: 'pattern', name: 'פסי צד',      price: 200 },
+  { id: 'pt_stars',   slot: 'pattern', name: 'כוכבים',      price: 350 },
+  { id: 'pt_flames',  slot: 'pattern', name: 'להבות',       price: 500 },
+  { id: 'pt_gold',    slot: 'pattern', name: 'עיטור זהב',   price: 800 },
+  { id: 'band_red',   slot: 'head', name: 'סרט ראש אדום',   price: 80,   color: '#d23a40' },
+  { id: 'band_white', slot: 'head', name: 'סרט ראש לבן',    price: 80,   color: '#eeeeee' },
+  { id: 'bandana',    slot: 'head', name: 'בנדנה כחולה',    price: 180,  color: '#2f5fc4' },
+  { id: 'headgear',   slot: 'head', name: 'קסדת אימון',     price: 450,  color: '#b3262e' },
+  { id: 'crown',      slot: 'head', name: 'כתר האלוף',      price: 6000 },
+  { id: 'paint',      slot: 'face', name: 'צבע מלחמה',      price: 150 },
+  { id: 'shades',     slot: 'face', name: 'משקפי שמש',      price: 300 },
+  { id: 'tags',       slot: 'neck', name: 'דיסקיות',        price: 250 },
+  { id: 'chain',      slot: 'neck', name: 'שרשרת זהב',      price: 700 },
+  { id: 'tribal',     slot: 'tattoo', name: 'קעקוע שבטי',   price: 400 },
+  { id: 'sleeve',     slot: 'tattoo', name: 'שרוול קעקועים', price: 900 },
+  { id: 'robe_red',   slot: 'robe', name: 'חלוק אדום',       price: 500,  color: '#b3262e', trim: '#f2f2f2' },
+  { id: 'robe_white', slot: 'robe', name: 'חלוק לבן-כחול',   price: 800,  color: '#eeeeee', trim: '#2f5fc4' },
+  { id: 'robe_black', slot: 'robe', name: 'חלוק שחור-זהב',   price: 1400, color: '#17181d', trim: '#e3b23c' }
+];
+const WARDROBE_BY_ID = Object.fromEntries(WARDROBE.map(w => [w.id, w]));
+
+const CHALLENGERS = [
+  { name: 'אנטון רייס', nick: 'המכונה', style: 'balanced' },
+  { name: 'סמי חדד', nick: 'הנחש', style: 'speedster' },
+  { name: 'ברנדון קול', nick: 'טורנדו', style: 'slugger' },
+  { name: 'עומר נסים', nick: 'האריה', style: 'counter' },
+  { name: 'דימה קרוב', nick: 'פלדה', style: 'tank' },
+  { name: 'קאי נקאמורה', nick: 'הברק', style: 'dodger' },
+  { name: 'מרקוס סטון', nick: 'הבולדוזר', style: 'pressure' },
+  { name: 'איוון דרגוב', nick: 'המגדל', style: 'giant' },
+  { name: 'ליאם אוקונור', nick: 'הפרא', style: 'brawler' },
+  { name: 'פבלו ריוס', nick: 'המדען', style: 'outboxer' }
+];
+
+function challenger(n) {
+  const c = CHALLENGERS[n % CHALLENGERS.length];
+  const seed = n * 7 + 3;
+  const pick = (arr, k) => arr[(seed * (k + 3) + k) % arr.length];
+  return {
+    ...c, level: 52 + n * 3, purse: 9000 + n * 1500, rounds: 5, tier: 'הגנה על התואר', defense: true,
+    look: {
+      skin: pick(LOOK_OPTIONS.skin, 1), hairStyle: pick(LOOK_OPTIONS.hairStyle, 2).id, hairColor: pick(LOOK_OPTIONS.hairColor, 3),
+      beard: pick(LOOK_OPTIONS.beard, 4).id, shorts: pick(LOOK_OPTIONS.cloth, 5), gloves: pick(LOOK_OPTIONS.cloth, 6), shoes: pick(LOOK_OPTIONS.cloth, 7)
+    }
+  };
+}
+
+function oppStats(o) {
+  const m = STYLES[o.style].m, s = {};
+  for (const d of STAT_DEFS) s[d.id] = Math.max(3, Math.round(o.level * m[d.id]));
+  return s;
+}
+
+function newCareer(name, nick, look) {
+  return {
+    v: 2, name, nick, look, style: 'balanced', styles: ['balanced'],
+    stats: { power: 10, speed: 10, stamina: 10, defense: 10, chin: 10 },
+    money: 250, energy: 100, week: 1,
+    record: { w: 0, l: 0, ko: 0 },
+    next: 0, defenses: 0,
+    gear: { gloves: 0, shoes: 0, mask: 0, wraps: 0, guard: 0 },
+    coach: false, belts: [], history: [],
+    outfit: { owned: [], equip: {} }
+  };
+}
+
+</script>
+<script>
+// ===== אפקטים קוליים (סינתזה, בלי קבצים) =====
+const Sfx = {
+  ctx: null, on: true, _nb: null,
+  init() {
+    if (this.ctx) return;
+    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { this.ctx = null; }
+  },
+  nb() {
+    if (this._nb) return this._nb;
+    const c = this.ctx, b = c.createBuffer(1, c.sampleRate * 1.5, c.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return (this._nb = b);
+  },
+  play(fn) {
+    if (!this.on) return;
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    try { fn(this.ctx, this.ctx.currentTime); } catch (e) { /* ignore */ }
+  },
+  noise(freq, dur, vol, type = 'lowpass', q = 1, delay = 0, attack = 0) {
+    this.play((c, t0) => {
+      const t = t0 + delay;
+      const s = c.createBufferSource(); s.buffer = this.nb();
+      const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+      const g = c.createGain();
+      if (attack) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack); }
+      else g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + attack + dur);
+      s.connect(f).connect(g).connect(c.destination);
+      s.start(t, Math.random() * 0.8); s.stop(t + attack + dur + 0.05);
+    });
+  },
+  tone(freq, dur, vol, type = 'sine', slideTo = 0, delay = 0) {
+    this.play((c, t0) => {
+      const t = t0 + delay;
+      const o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(freq, t);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+      const g = c.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + 0.05);
+    });
+  },
+  hit(heavy) {
+    this.noise(heavy ? 900 : 1400, heavy ? 0.2 : 0.11, heavy ? 0.8 : 0.5);
+    this.tone(heavy ? 120 : 160, heavy ? 0.22 : 0.12, heavy ? 0.7 : 0.4, 'sine', 45);
+  },
+  block() { this.noise(2400, 0.07, 0.3, 'bandpass', 2); this.tone(300, 0.06, 0.12, 'triangle'); },
+  whoosh(v = 1) { this.noise(1700, 0.12, 0.14 * v, 'bandpass', 0.8); },
+  bell() {
+    [0, 0.3, 0.6].forEach(d => { this.tone(1318, 1.1, 0.22, 'sine', 0, d); this.tone(2660, 0.7, 0.08, 'sine', 0, d); });
+  },
+  tick() { this.tone(880, 0.07, 0.18, 'square'); },
+  crowd() { this.noise(1000, 1.8, 0.35, 'bandpass', 0.5, 0, 0.25); },
+  cash() { this.tone(1200, 0.08, 0.15, 'triangle'); this.tone(1700, 0.16, 0.15, 'triangle', 0, 0.08); },
+  click() { this.tone(600, 0.04, 0.06, 'triangle'); }
+};
+
+</script>
+<script>
+// ===== ציור ריאליסטי של הלוחמים והזירה (Canvas, מבט צד) =====
+// תאורה: אור ראשי מלמעלה-קדימה, צל בצד האחורי, הדגשת שוליים (rim light) מהפרוז׳קטורים.
+const DEFAULT_POSE = { lead: 0, rear: 0, upper: 0, block: 0, leanX: 0, duck: 0, snap: 0, fall: 0, bob: 0, stride: 0, hurt: false, win: 0, dmg: 0, sweat: 0, sway: 0, robe: false };
+
+function shade(hex, amt) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const f = amt < 0 ? v => Math.round(v * (1 + amt)) : v => Math.round(v + (255 - v) * amt);
+  return `rgb(${f(r)},${f(g)},${f(b)})`;
+}
+function shadeHex(hex, amt) {
+  return '#' + shade(hex, amt).match(/\d+/g).map(v => (+v).toString(16).padStart(2, '0')).join('');
+}
+function rgba(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
+function lum(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+}
+const lerp = (a, b, t) => a + (b - a) * t;
+const lp = (A, B, t) => [lerp(A[0], B[0], t), lerp(A[1], B[1], t)];
+
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function circle(ctx, x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+function ell(ctx, x, y, rx, ry, rot = 0) { ctx.beginPath(); ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2); ctx.fill(); }
+function limb(ctx, pts, w, color) {
+  ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.stroke();
+}
+function star(ctx, x, y, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? r * 0.45 : r; ctx.lineTo(x + Math.cos(a) * q, y + Math.sin(a) * q); }
+  ctx.closePath(); ctx.fill();
+}
+
+// ---------- גפיים עם נפח (גרדיאנט גלילי + שריר) ----------
+function cylGrad(ctx, A, B, w, base, light = 0.22, dark = 0.4) {
+  const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny; }
+  const mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2;
+  const g = ctx.createLinearGradient(mx + nx * w / 2, my + ny * w / 2, mx - nx * w / 2, my - ny * w / 2);
+  g.addColorStop(0, shade(base, light)); g.addColorStop(0.28, base); g.addColorStop(0.75, shade(base, -dark * 0.5)); g.addColorStop(1, shade(base, -dark));
+  return g;
+}
+function taper(ctx, A, B, wA, wB, base, bulge, light, dark) {
+  const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+  ctx.fillStyle = cylGrad(ctx, A, B, Math.max(wA, wB) * 1.15, base, light, dark);
+  ctx.beginPath();
+  ctx.moveTo(A[0] + nx * wA / 2, A[1] + ny * wA / 2); ctx.lineTo(B[0] + nx * wB / 2, B[1] + ny * wB / 2);
+  ctx.lineTo(B[0] - nx * wB / 2, B[1] - ny * wB / 2); ctx.lineTo(A[0] - nx * wA / 2, A[1] - ny * wA / 2);
+  ctx.closePath(); ctx.fill();
+  circle(ctx, A[0], A[1], wA / 2); circle(ctx, B[0], B[1], wB / 2);
+  if (bulge) {
+    const [t, wf] = bulge;
+    ell(ctx, lerp(A[0], B[0], t), lerp(A[1], B[1], t), L * 0.34, lerp(wA, wB, t) * wf / 2, Math.atan2(dy, dx));
+  }
+}
+
+// ---------- נעליים גבוהות ----------
+function shoe(ctx, x, c) {
+  const y = 0;
+  const g = ctx.createLinearGradient(x, y - 36, x + 6, y);
+  g.addColorStop(0, shade(c, 0.22)); g.addColorStop(0.55, c); g.addColorStop(1, shade(c, -0.35));
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.moveTo(x - 12, y - 36); ctx.lineTo(x + 6, y - 36);
+  ctx.quadraticCurveTo(x + 8, y - 19, x + 14, y - 13); ctx.quadraticCurveTo(x + 25, y - 10, x + 24, y - 3);
+  ctx.lineTo(x + 24, y - 1); ctx.lineTo(x - 14, y - 1); ctx.quadraticCurveTo(x - 16, y - 20, x - 12, y - 36);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#e6e6ea'; rr(ctx, x - 15, y - 5, 40, 5, 2); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(x - 15, y - 1.5, 40, 1.5);
+  ctx.strokeStyle = lum(c) > 0.7 ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.7)'; ctx.lineWidth = 1.3;
+  for (let i = 0; i < 5; i++) { const yy = y - 32 + i * 4.6; ctx.beginPath(); ctx.moveTo(x + 1 + i * 1.2, yy); ctx.lineTo(x + 6.5 + i * 1.5, yy + 1.4); ctx.stroke(); }
+  ctx.fillStyle = shade(c, -0.4); rr(ctx, x - 12, y - 38, 19, 4, 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; ell(ctx, x + 16, y - 9, 5, 2, -0.3);
+}
+
+// ---------- מכנסיים ----------
+function shortsPath(ctx, by) {
+  ctx.beginPath();
+  ctx.moveTo(-25, -134 + by); ctx.lineTo(25, -134 + by); ctx.lineTo(35, -80 + by); ctx.lineTo(5, -80 + by);
+  ctx.lineTo(1, -93 + by); ctx.lineTo(-3, -80 + by); ctx.lineTo(-34, -80 + by); ctx.closePath();
+}
+function drawShorts(ctx, c, by, pattern) {
+  const g = ctx.createLinearGradient(-35, 0, 36, 0);
+  g.addColorStop(0, shade(c, -0.42)); g.addColorStop(0.3, shade(c, -0.12)); g.addColorStop(0.58, shade(c, 0.28));
+  g.addColorStop(0.7, c); g.addColorStop(1, shade(c, -0.22));
+  ctx.fillStyle = g; shortsPath(ctx, by); ctx.fill();
+  ctx.save(); shortsPath(ctx, by); ctx.clip();
+  const band = lum(c) > 0.72 ? '#1b1d22' : '#f2f2f2';
+  if (pattern === 'pt_flames') {
+    const fl = (col, h) => {
+      ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(-40, -78 + by);
+      for (let i = 0; i <= 8; i++) { const x = -36 + i * 9; ctx.quadraticCurveTo(x - 2, -90 + by, x + 2, -80 - h - (i % 3) * 8 + by); ctx.quadraticCurveTo(x + 3, -88 + by, x + 5, -84 + by); }
+      ctx.lineTo(40, -78 + by); ctx.closePath(); ctx.fill();
+    };
+    fl('#ff6a1a', 22); fl('#ffc93a', 10);
+  } else if (pattern === 'pt_stars') {
+    ctx.fillStyle = band; [[-18, -112], [8, -104], [20, -122], [-6, -92], [-26, -94], [24, -92]].forEach(([x, y]) => star(ctx, x, y + by, 5));
+  } else if (pattern === 'pt_stripes') {
+    ctx.fillStyle = band; ctx.fillRect(-13, -128 + by, 4, 50); ctx.fillRect(3, -128 + by, 4, 50);
+  } else if (pattern === 'pt_gold') {
+    ctx.fillStyle = '#e3b23c'; ctx.fillRect(-40, -86 + by, 80, 6); ctx.fillRect(-6, -128 + by, 6, 46);
+  }
+  // קפלי בד וברק סאטן
+  ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-9, -124 + by); ctx.quadraticCurveTo(-15, -104 + by, -13, -82 + by); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(13, -122 + by); ctx.quadraticCurveTo(21, -104 + by, 20, -82 + by); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(8, -126 + by); ctx.quadraticCurveTo(14, -104 + by, 12, -84 + by); ctx.stroke();
+  ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(-40, -85 + by, 80, 5);
+  ctx.restore();
+  const wb = pattern === 'pt_gold' ? '#e3b23c' : band;
+  const wg = ctx.createLinearGradient(0, -139 + by, 0, -128 + by);
+  wg.addColorStop(0, shade(wb.length === 7 ? wb : '#f2f2f2', 0.3)); wg.addColorStop(1, shade(wb.length === 7 ? wb : '#f2f2f2', -0.25));
+  ctx.fillStyle = wg; rr(ctx, -27, -139 + by, 54, 11, 3); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillRect(-26, -134 + by, 52, 1);
+  if (!pattern) { ctx.fillStyle = band; ctx.globalAlpha = 0.75; ctx.fillRect(-4, -128 + by, 4, 46); ctx.globalAlpha = 1; }
+}
+
+// ---------- גו ----------
+function torsoPath(ctx, lx, by) {
+  ctx.beginPath();
+  ctx.moveTo(-20, -124 + by);
+  ctx.bezierCurveTo(-28, -146 + by, -33 + lx * 0.6, -172 + by, -22 + lx, -190 + by);
+  ctx.quadraticCurveTo(0 + lx, -198 + by, 20 + lx, -191 + by);
+  ctx.bezierCurveTo(34 + lx, -179 + by, 30, -150 + by, 21, -124 + by);
+  ctx.closePath();
+}
+function drawTorso(ctx, skin, lx, by, p) {
+  // צוואר + צל של הלסת
+  const nA = [5 + lx, -188 + by], nB = [5 + lx, -208 + by];
+  taper(ctx, nA, nB, 19, 16, shadeHex(skin, -0.08));
+  ctx.fillStyle = 'rgba(0,0,0,.28)'; ell(ctx, 10 + lx, -202 + by, 9, 5, 0.2);
+  const g = ctx.createRadialGradient(10 + lx, -178 + by, 4, 2 + lx, -160 + by, 64);
+  g.addColorStop(0, shade(skin, 0.2)); g.addColorStop(0.4, skin); g.addColorStop(0.8, shade(skin, -0.2)); g.addColorStop(1, shade(skin, -0.38));
+  ctx.fillStyle = g; torsoPath(ctx, lx, by); ctx.fill();
+  ctx.save(); torsoPath(ctx, lx, by); ctx.clip();
+  ctx.fillStyle = 'rgba(0,0,0,.22)'; ell(ctx, -29 + lx * 0.5, -156 + by, 13, 44);
+  // הגדרת שרירים
+  const def = shade(skin, -0.32);
+  ctx.strokeStyle = def; ctx.lineCap = 'round';
+  ctx.globalAlpha = 0.55; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(2 + lx, -172 + by); ctx.quadraticCurveTo(16 + lx, -158 + by, 29 + lx * 0.8, -165 + by); ctx.stroke();
+  ctx.globalAlpha = 0.35; ctx.lineWidth = 1.6;
+  for (let i = 0; i < 3; i++) { const y = -150 + i * 9 + by; ctx.beginPath(); ctx.moveTo(15 + lx * 0.4, y); ctx.quadraticCurveTo(21 + lx * 0.3, y + 2, 26 + lx * 0.2, y - 1); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(14 + lx * 0.5, -154 + by); ctx.lineTo(14 + lx * 0.2, -128 + by); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-6 + lx * 0.5, -160 + by); ctx.quadraticCurveTo(2, -138 + by, 8, -126 + by); ctx.stroke();
+  ctx.globalAlpha = 1;
+  // ברק מהתאורה (ובזיעה — יותר)
+  ctx.fillStyle = `rgba(255,248,235,${0.1 + p.sweat * 0.18})`;
+  ell(ctx, 16 + lx, -174 + by, 9, 4, -0.4); ell(ctx, 22 + lx * 0.5, -144 + by, 3, 6, 0.1);
+  if (p.sweat > 0.3) { ctx.fillStyle = `rgba(255,255,255,${p.sweat * 0.35})`; [[4, -150], [18, -132], [-8, -170], [10, -186]].forEach(([x, y]) => circle(ctx, x + lx * 0.5, y + by, 1.3)); }
+  ctx.restore();
+  // קו אור קדמי
+  ctx.strokeStyle = 'rgba(255,236,210,.28)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(20 + lx, -191 + by); ctx.bezierCurveTo(34 + lx, -179 + by, 30, -150 + by, 21, -126 + by); ctx.stroke();
+}
+
+function drawTop(ctx, item, lx, by) {
+  ctx.save(); torsoPath(ctx, lx, by); ctx.clip();
+  const g = ctx.createLinearGradient(-34, 0, 34, 0);
+  g.addColorStop(0, shade(item.color, -0.4)); g.addColorStop(0.55, item.color); g.addColorStop(0.75, shade(item.color, 0.18)); g.addColorStop(1, shade(item.color, -0.15));
+  ctx.fillStyle = g;
+  ctx.fillRect(-45, -179 + by, 90, 60);
+  ctx.fillRect(-12 + lx * 0.8, -198 + by, 12, 24);
+  if (item.camo) {
+    const blobs = [[-14, -168, '#6b7a4a'], [8, -150, '#2f3824'], [-6, -138, '#7d6b45'], [16, -172, '#2f3824'], [-20, -146, '#7d6b45'], [4, -128, '#6b7a4a']];
+    for (const [x, y, c] of blobs) { ctx.fillStyle = c; ell(ctx, x + lx * 0.5, y + by, 9, 5, 0.6); }
+  }
+  if (item.trim) { ctx.fillStyle = item.trim; ctx.fillRect(-45, -181 + by, 90, 3); ctx.fillRect(-45, -130 + by, 90, 4); }
+  ctx.strokeStyle = 'rgba(0,0,0,.22)'; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(0, -170 + by); ctx.quadraticCurveTo(8, -150 + by, 4, -132 + by); ctx.stroke();
+  ctx.restore();
+}
+
+function drawNeck(ctx, id, lx, by) {
+  ctx.save(); ctx.lineCap = 'round';
+  if (id === 'chain') {
+    ctx.strokeStyle = '#e8c150'; ctx.lineWidth = 3; ctx.setLineDash([3, 1.5]);
+    ctx.beginPath(); ctx.moveTo(1 + lx, -196 + by); ctx.quadraticCurveTo(7 + lx, -173 + by, 21 + lx, -172 + by); ctx.stroke();
+    ctx.setLineDash([]);
+    const g = ctx.createRadialGradient(21 + lx, -168 + by, 0.5, 22 + lx, -166 + by, 5);
+    g.addColorStop(0, '#fff3c4'); g.addColorStop(0.5, '#f0c14e'); g.addColorStop(1, '#9c6f12');
+    ctx.fillStyle = g; circle(ctx, 22 + lx, -166 + by, 4.8);
+  } else if (id === 'tags') {
+    ctx.strokeStyle = '#c9ccd4'; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(1 + lx, -196 + by); ctx.quadraticCurveTo(7 + lx, -175 + by, 19 + lx, -173 + by); ctx.stroke();
+    ctx.fillStyle = '#d7dae1'; ctx.translate(20 + lx, -166 + by); ctx.rotate(-0.2); rr(ctx, -3, -5, 7, 10, 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawRobe(ctx, item, lx, by) {
+  ctx.save();
+  const g = ctx.createLinearGradient(-42, 0, 42, 0);
+  g.addColorStop(0, shade(item.color, -0.45)); g.addColorStop(0.55, item.color); g.addColorStop(0.75, shade(item.color, 0.2)); g.addColorStop(1, shade(item.color, -0.2));
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.moveTo(-23 + lx, -194 + by); ctx.lineTo(20 + lx, -194 + by);
+  ctx.quadraticCurveTo(38, -150 + by, 42, -56); ctx.lineTo(-42, -56); ctx.quadraticCurveTo(-38, -150 + by, -23 + lx, -194 + by);
+  ctx.closePath(); ctx.fill();
+  ctx.clip();
+  ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 2;
+  [[-20, -120], [-6, -100], [12, -110]].forEach(([x, y]) => { ctx.beginPath(); ctx.moveTo(x, y + by); ctx.quadraticCurveTo(x - 4, (y - 56) / 2, x - 2, -58); ctx.stroke(); });
+  ctx.fillStyle = item.trim; ctx.fillRect(-50, -64, 100, 8); ctx.fillRect(-50, -134 + by, 100, 8);
+  ctx.restore();
+  ctx.strokeStyle = item.trim; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(4 + lx, -195 + by); ctx.lineTo(24 + lx * 0.5, -140 + by); ctx.lineTo(36, -60); ctx.stroke();
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(30, -130 + by); ctx.lineTo(36, -100 + by); ctx.moveTo(30, -130 + by); ctx.lineTo(26, -104 + by); ctx.stroke();
+}
+
+// ---------- שיער ----------
+function hairFill(ctx, hx, hy, r, c) {
+  const g = ctx.createLinearGradient(hx, hy - r * 1.6, hx - 4, hy + r * 0.8);
+  g.addColorStop(0, shade(c, 0.3)); g.addColorStop(0.35, c); g.addColorStop(1, shade(c, -0.3));
+  return g;
+}
+function capPath(ctx, hx, hy, r) {
+  ctx.beginPath();
+  ctx.moveTo(hx + r * 1.15, hy - r * 0.42);
+  ctx.quadraticCurveTo(hx + r * 0.3, hy - r * 0.64, hx - r * 0.05, hy - r * 0.25);
+  ctx.quadraticCurveTo(hx - r * 0.18, hy + r * 0.3, hx - r * 0.32, hy + r * 0.55);
+  ctx.lineTo(hx - r * 1.4, hy + r * 0.75); ctx.lineTo(hx - r * 1.4, hy - r * 1.7); ctx.lineTo(hx + r * 1.4, hy - r * 1.7);
+  ctx.closePath();
+}
+function hairBack(ctx, look, hx, hy, r) {
+  const c = look.hairColor;
+  ctx.fillStyle = hairFill(ctx, hx, hy, r * 1.4, c); ctx.strokeStyle = c;
+  if (look.hairStyle === 'afro') {
+    circle(ctx, hx - 5, hy - 8, r * 1.5);
+    ctx.fillStyle = 'rgba(0,0,0,.2)';
+    for (let i = 0; i < 22; i++) { const a = i * 2.4, d = (i % 5) * 6 + 5; circle(ctx, hx - 5 + Math.cos(a) * d, hy - 8 + Math.sin(a) * d, 2.6); }
+    ctx.fillStyle = 'rgba(255,255,255,.08)'; ell(ctx, hx - 2, hy - 30, 16, 6, -0.2);
+  } else if (look.hairStyle === 'pony') {
+    ctx.strokeStyle = hairFill(ctx, hx, hy + 20, r, c); ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(hx - r + 1, hy - 8); ctx.quadraticCurveTo(hx - r - 20, hy + 2, hx - r - 16, hy + 30); ctx.stroke();
+    ctx.fillStyle = shade(c, -0.1); circle(ctx, hx - r + 1, hy - 8, 7);
+  } else if (look.hairStyle === 'dreads') {
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 7; i++) {
+      const a = Math.PI * (1.0 + i * 0.07), sx = hx + Math.cos(a) * r * 0.9, sy = hy + Math.sin(a) * r * 0.9;
+      ctx.strokeStyle = i % 2 ? c : shade(c, 0.12); ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(sx - 8, sy + 16, sx - 5 - i * 1.4, sy + 34 + (i % 2) * 7); ctx.stroke();
+    }
+  }
+}
+function hairFront(ctx, look, hx, hy, r) {
+  const st = look.hairStyle, c = look.hairColor;
+  if (st === 'bald') {
+    const g = ctx.createRadialGradient(hx + 4, hy - r * 0.65, 0, hx + 4, hy - r * 0.65, 9);
+    g.addColorStop(0, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ell(ctx, hx + 4, hy - r * 0.62, 9, 5, -0.3);
+    return;
+  }
+  ctx.fillStyle = hairFill(ctx, hx, hy, r, c);
+  if (st === 'short' || st === 'dreads' || st === 'pony') ell(ctx, hx - 3, hy - r * 0.72, r * 0.98, r * 0.44, -0.08);
+  ctx.save();
+  ctx.beginPath(); ctx.arc(hx, hy, r + (st === 'buzz' ? 1 : 2.5), 0, Math.PI * 2); ctx.clip();
+  ctx.globalAlpha = st === 'buzz' ? 0.8 : st === 'mohawk' ? 0.3 : 1;
+  capPath(ctx, hx, hy, r); ctx.fill();
+  ctx.globalAlpha = 1;
+  if (st === 'short' || st === 'pony' || st === 'afro') {
+    ctx.strokeStyle = 'rgba(255,255,255,.08)'; ctx.lineWidth = 1;
+    for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(hx - 14 + i * 5, hy - r - 2); ctx.quadraticCurveTo(hx - 16 + i * 5, hy - r * 0.5, hx - 20 + i * 4, hy - 4); ctx.stroke(); }
+  }
+  ctx.restore();
+  if (st === 'mohawk') {
+    const a0 = -0.28 * Math.PI, a1 = -0.98 * Math.PI, n = 8;
+    ctx.fillStyle = hairFill(ctx, hx, hy - 6, r, c); ctx.beginPath();
+    for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n, q = i % 2 ? r + 14 : r + 1; ctx.lineTo(hx + Math.cos(a) * q, hy + Math.sin(a) * q); }
+    for (let i = n; i >= 0; i--) { const a = a0 + (a1 - a0) * i / n; ctx.lineTo(hx + Math.cos(a) * (r - 7), hy + Math.sin(a) * (r - 7)); }
+    ctx.closePath(); ctx.fill();
+  }
+}
+function beard(ctx, look, hx, hy, r) {
+  if (look.beard === 'none') return;
+  ctx.save(); ctx.fillStyle = hairFill(ctx, hx, hy + 14, r * 0.6, look.hairColor);
+  if (look.beard === 'mustache') { rr(ctx, hx + 12, hy + 6, 12, 4.5, 2); ctx.fill(); ctx.restore(); return; }
+  ctx.globalAlpha = look.beard === 'stubble' ? 0.32 : 1;
+  ctx.beginPath(); ctx.arc(hx, hy, r + 0.5, 0, Math.PI * 2); ctx.ellipse(hx + 9, hy + 11, 13.5, 11.5, 0.2, 0, Math.PI * 2); ctx.clip();
+  ctx.beginPath(); ctx.moveTo(hx - 5, hy - 2); ctx.lineTo(hx + 2, hy + 3); ctx.quadraticCurveTo(hx + 14, hy + 5, hx + 27, hy + 5);
+  ctx.lineTo(hx + 30, hy + 32); ctx.lineTo(hx - 8, hy + 32); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+// ---------- ראש ופנים ----------
+function drawHead(ctx, look, hx, hy, p) {
+  const r = 21, skin = look.skin, skinD = shade(skin, -0.24);
+  hairBack(ctx, look, hx, hy, r);
+  const g = ctx.createRadialGradient(hx + 9, hy - 9, 2, hx + 2, hy + 2, r * 1.45);
+  g.addColorStop(0, shade(skin, 0.2)); g.addColorStop(0.45, skin); g.addColorStop(0.85, shade(skin, -0.22)); g.addColorStop(1, shade(skin, -0.38));
+  ctx.fillStyle = g;
+  circle(ctx, hx, hy, r);
+  ell(ctx, hx + 9, hy + 11, 13, 11, 0.2);
+  // אף
+  ctx.beginPath(); ctx.moveTo(hx + 18, hy - 7); ctx.quadraticCurveTo(hx + 27, hy + 3, hx + 25, hy + 6); ctx.lineTo(hx + 18, hy + 7); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.22)'; ell(ctx, hx + 20, hy + 6, 2.2, 1.2);
+  // עצמות לחיים וצל לסת
+  ctx.fillStyle = 'rgba(255,240,225,.12)'; ell(ctx, hx + 14, hy + 1, 5, 3, 0.3);
+  ctx.fillStyle = 'rgba(0,0,0,.16)'; ell(ctx, hx + 6, hy + 16, 9, 4, 0.3);
+  beard(ctx, look, hx, hy, r);
+  // עין
+  ctx.fillStyle = 'rgba(0,0,0,.14)'; ell(ctx, hx + 14, hy - 5, 6, 3.4);
+  if (p.hurt || p.fall > 0.3) {
+    ctx.strokeStyle = '#1a120e'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(hx + 10, hy - 2); ctx.quadraticCurveTo(hx + 14, hy - 1, hx + 18, hy - 3); ctx.stroke();
+  } else {
+    ctx.fillStyle = '#efe8e0'; ell(ctx, hx + 14.5, hy - 3, 3.4, 2.3);
+    ctx.fillStyle = '#2b1d15'; circle(ctx, hx + 16, hy - 3, 1.7);
+    ctx.fillStyle = 'rgba(255,255,255,.8)'; circle(ctx, hx + 16.5, hy - 3.6, 0.5);
+    ctx.strokeStyle = shade(skin, -0.5); ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(hx + 11, hy - 4.5); ctx.quadraticCurveTo(hx + 14.5, hy - 6.5, hx + 18.5, hy - 4); ctx.stroke();
+  }
+  // גבה
+  ctx.strokeStyle = look.hairStyle === 'bald' && look.beard === 'none' ? shade(skin, -0.55) : shade(look.hairColor, 0.05);
+  ctx.lineWidth = 2.8; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(hx + 8, hy - 9.5); ctx.quadraticCurveTo(hx + 14, hy - 11.5 + (p.win ? -1.5 : 0), hx + 20, hy - 8.5); ctx.stroke();
+  // שפתיים
+  ctx.fillStyle = shade(skin, -0.35);
+  if (p.win) { ctx.beginPath(); ctx.moveTo(hx + 13, hy + 11); ctx.quadraticCurveTo(hx + 17, hy + 16, hx + 22, hy + 11); ctx.closePath(); ctx.fill(); ctx.fillStyle = '#f3f1ea'; ell(ctx, hx + 17.5, hy + 12, 3.5, 1.3); }
+  else { ell(ctx, hx + 18, hy + 12.5, 4, 1.6, -0.1); }
+  // נזק: חבורות, נפיחות, חתך
+  const d = p.dmg || 0;
+  if (d > 0.15) {
+    const a = Math.min(1, (d - 0.15) / 0.85);
+    const bg = ctx.createRadialGradient(hx + 13, hy + 3, 0, hx + 13, hy + 3, 9);
+    bg.addColorStop(0, `rgba(135,30,55,${0.45 * a})`); bg.addColorStop(1, 'rgba(135,30,55,0)');
+    ctx.fillStyle = bg; ell(ctx, hx + 13, hy + 3, 9, 7);
+    if (a > 0.35) {
+      ctx.fillStyle = `rgba(85,30,85,${0.35 * a})`; ell(ctx, hx + 15, hy - 3, 5, 3.6);
+      ctx.fillStyle = shade(skin, -0.05); ell(ctx, hx + 15, hy - 6.5, 4.5 * a, 2.4 * a, 0.1);
+    }
+    if (a > 0.6) {
+      ctx.strokeStyle = '#8a0f18'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(hx + 10, hy - 12); ctx.lineTo(hx + 17, hy - 10.5); ctx.stroke();
+      ctx.strokeStyle = 'rgba(165,15,25,.85)'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(hx + 13, hy - 10.5); ctx.quadraticCurveTo(hx + 12, hy - 6, hx + 12.5, hy - 10.5 + 12 * a); ctx.stroke();
+    }
+  }
+  // זיעה על המצח
+  if (p.sweat > 0.25) { ctx.fillStyle = `rgba(255,255,255,${p.sweat * 0.5})`; circle(ctx, hx + 12, hy - 14, 1.2); circle(ctx, hx + 4, hy - 17, 1); }
+  const of = look.outfit || {};
+  if (of.face === 'paint') { ctx.fillStyle = '#141414'; rr(ctx, hx + 9, hy + 2, 11, 3, 1.5); ctx.fill(); rr(ctx, hx + 10, hy + 6, 9, 2.5, 1.2); ctx.fill(); }
+  if (of.head !== 'bandana' && of.head !== 'headgear') hairFront(ctx, look, hx, hy, r);
+  // אוזן
+  ctx.fillStyle = skinD; ell(ctx, hx - 3, hy + 2, 5, 7);
+  ctx.strokeStyle = shade(skin, -0.45); ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(hx - 3, hy + 2, 3, -1.2, 1.6); ctx.stroke();
+  if (of.face === 'shades') {
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(hx + 10, hy - 4); ctx.lineTo(hx - 2, hy - 2); ctx.stroke();
+    const sg = ctx.createLinearGradient(hx + 8, hy - 8, hx + 24, hy);
+    sg.addColorStop(0, '#2a3342'); sg.addColorStop(0.5, '#0c0f14'); sg.addColorStop(1, '#1d2533');
+    ctx.fillStyle = sg; rr(ctx, hx + 8, hy - 8, 16, 8, 3); ctx.fill();
+    ctx.fillStyle = 'rgba(160,200,255,.45)'; rr(ctx, hx + 15, hy - 7, 5, 2, 1); ctx.fill();
+  }
+  if (of.head) drawHeadwear(ctx, WARDROBE_BY_ID[of.head], hx, hy, r, look);
+}
+
+function drawHeadwear(ctx, item, hx, hy, r, look) {
+  if (!item) return;
+  ctx.save(); ctx.lineCap = 'round';
+  if (item.id === 'band_red' || item.id === 'band_white') {
+    ctx.save(); ctx.beginPath(); ctx.arc(hx, hy, r + 2.5, 0, Math.PI * 2); ctx.clip();
+    const g = ctx.createLinearGradient(0, hy - 14, 0, hy - 7); g.addColorStop(0, shade(item.color, 0.2)); g.addColorStop(1, shade(item.color, -0.25));
+    ctx.fillStyle = g; ctx.fillRect(hx - r - 4, hy - 14, 2 * r + 8, 7); ctx.restore();
+    ctx.strokeStyle = item.color; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.moveTo(hx - r, hy - 10); ctx.lineTo(hx - r - 12, hy - 2); ctx.moveTo(hx - r, hy - 10); ctx.lineTo(hx - r - 9, hy + 7); ctx.stroke();
+  } else if (item.id === 'bandana') {
+    ctx.save(); ctx.beginPath(); ctx.arc(hx, hy, r + 2, 0, Math.PI * 2); ctx.clip();
+    ctx.fillStyle = hairFill(ctx, hx, hy, r, item.color); ctx.fillRect(hx - r - 4, hy - r - 6, 2 * r + 8, r - 1);
+    ctx.fillStyle = 'rgba(255,255,255,.7)'; [[-10, -16], [0, -19], [10, -14], [-4, -9], [6, -8], [-14, -6]].forEach(([x, y]) => circle(ctx, hx + x, hy + y, 1.6));
+    ctx.restore();
+    ctx.fillStyle = item.color;
+    ctx.beginPath(); ctx.moveTo(hx - r + 2, hy - 10); ctx.lineTo(hx - r - 14, hy - 4); ctx.lineTo(hx - r - 8, hy + 6); ctx.closePath(); ctx.fill();
+  } else if (item.id === 'headgear') {
+    ctx.save(); ctx.beginPath(); ctx.arc(hx, hy, r + 2, 0, Math.PI * 2); ctx.clip();
+    ctx.fillStyle = hairFill(ctx, hx, hy, r, item.color); capPath(ctx, hx, hy, r); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = item.color; ctx.lineWidth = 10;
+    ctx.beginPath(); ctx.arc(hx, hy, r + 1, Math.PI * 0.72, Math.PI * 1.9); ctx.stroke();
+    ctx.fillStyle = shade(item.color, -0.1); ell(ctx, hx + 3, hy + 7, 7, 11);
+    ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(hx, hy, r + 6, Math.PI * 1.1, Math.PI * 1.75); ctx.stroke();
+    ctx.strokeStyle = shade(item.color, -0.3); ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(hx + 5, hy + 17); ctx.lineTo(hx + 13, hy + 21); ctx.stroke();
+  } else if (item.id === 'crown') {
+    const y = hy - r * 0.8 - (look.hairStyle === 'afro' ? 12 : look.hairStyle === 'bald' || look.hairStyle === 'buzz' ? 0 : 5);
+    const g = ctx.createLinearGradient(hx, y - 20, hx, y); g.addColorStop(0, '#fff0b0'); g.addColorStop(0.5, '#f2c14e'); g.addColorStop(1, '#a8770f');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(hx - 14, y); ctx.lineTo(hx - 16, y - 17); ctx.lineTo(hx - 7, y - 8); ctx.lineTo(hx, y - 20);
+    ctx.lineTo(hx + 7, y - 8); ctx.lineTo(hx + 16, y - 17); ctx.lineTo(hx + 14, y); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#b7861c'; ctx.fillRect(hx - 14, y - 3, 28, 3);
+    ctx.fillStyle = '#d23a40'; circle(ctx, hx, y - 8, 2.6);
+    ctx.fillStyle = '#2f6fdb'; circle(ctx, hx - 9, y - 5, 2); circle(ctx, hx + 9, y - 5, 2);
+  }
+  ctx.restore();
+}
+
+// ---------- ידיים וכפפות ----------
+function computeArms(p, lx, by) {
+  const o = pt => [pt[0] + lx, pt[1] + by];
+  const sw = Math.sin(p.sway || 0) * 2.5, sw2 = Math.cos((p.sway || 0) * 0.7) * 1.5;
+  const rot = (p.upper ? 0 : p.rear * 14) - p.lead * 2;
+  const sR = o([-6 + rot, -180]), sL = o([10 + p.lead * 5 - p.rear * 4, -178]);
+  let gR = o([30 + sw2, -186 + sw]), gL = o([44 - sw2, -198 - sw]);
+  let eR = o([6, -146]), eL = o([28, -150]);
+  if (p.block > 0) {
+    gR = lp(gR, o([34, -202]), p.block); gL = lp(gL, o([40, -218]), p.block);
+    eR = lp(eR, o([20, -160]), p.block); eL = lp(eL, o([28, -168]), p.block);
+  }
+  if (p.win > 0) {
+    gR = lp(gR, o([-6, -292]), p.win); gL = lp(gL, o([26, -296]), p.win);
+    eR = lp(eR, o([-18, -238]), p.win); eL = lp(eL, o([30, -236]), p.win);
+  }
+  if (p.lead > 0) {
+    const t = o([106, -204]);
+    gL = lp(gL, t, p.lead); eL = lp(eL, [(sL[0] + t[0]) / 2, (sL[1] + t[1]) / 2 + 4], p.lead);
+  }
+  if (p.rear > 0) {
+    const e = p.rear;
+    if (p.upper) {
+      const low = o([42, -150]), hi = o([76, -226]);
+      gR = e < 0.4 ? lp(gR, low, e / 0.4) : lp(low, hi, (e - 0.4) / 0.6);
+      eR = lp(eR, [gR[0] - 26, gR[1] + 32], Math.min(1, e * 1.5));
+    } else {
+      const t = o([102, -202]);
+      gR = lp(gR, t, e); eR = lp(eR, [(sR[0] + t[0]) / 2, (sR[1] + t[1]) / 2 + 4], e);
+    }
+  }
+  return { rear: { s: sR, e: eR, g: gR }, lead: { s: sL, e: eL, g: gL } };
+}
+
+function drawGlove(ctx, g, e, col) {
+  const ang = Math.atan2(g[1] - e[1], g[0] - e[0]);
+  ctx.save(); ctx.translate(g[0], g[1]); ctx.rotate(ang);
+  // שרוול הכפפה עם פס לבן
+  const cg = ctx.createLinearGradient(0, -10, 0, 10);
+  cg.addColorStop(0, shade(col, 0.2)); cg.addColorStop(0.5, col); cg.addColorStop(1, shade(col, -0.45));
+  ctx.fillStyle = cg; rr(ctx, -25, -9.5, 19, 19, 5); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(-18, -9.5, 3, 19);
+  // אגרוף
+  const mg = ctx.createRadialGradient(5, -7, 1, 0, 0, 19);
+  mg.addColorStop(0, shade(col, 0.42)); mg.addColorStop(0.4, col); mg.addColorStop(1, shade(col, -0.5));
+  ctx.fillStyle = mg; ell(ctx, 1, 0, 16.5, 14.5);
+  ctx.fillStyle = shade(col, -0.12); ell(ctx, -3, -11.5, 8, 4.5, -0.2);
+  ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(1, 0, 10.5, -1.2, 1.25); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-8, -7.5); ctx.quadraticCurveTo(-2, -5, 4, -8.5); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.5)'; ell(ctx, 6, -7, 5.5, 2.2, -0.35);
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; ell(ctx, 11, 3, 2.5, 5, 0.2);
+  ctx.restore();
+}
+
+function drawArm(ctx, arm, skinCol, glove, tattoo, sleeve) {
+  const ux = arm.g[0] - arm.e[0], uy = arm.g[1] - arm.e[1], L = Math.hypot(ux, uy) || 1;
+  const wrist = [arm.g[0] - ux / L * 16, arm.g[1] - uy / L * 16];
+  taper(ctx, arm.s, arm.e, 18, 13, skinCol, [0.45, 1.18]);
+  taper(ctx, arm.e, wrist, 14, 11, skinCol, [0.3, 1.1]);
+  if (tattoo === 'sleeve') {
+    limb(ctx, [arm.s, arm.e], 9, 'rgba(22,34,60,.38)');
+    limb(ctx, [arm.e, lp(arm.e, wrist, 0.7)], 8, 'rgba(22,34,60,.38)');
+  }
+  if (tattoo === 'tribal' || tattoo === 'sleeve') {
+    const vx = arm.e[0] - arm.s[0], vy = arm.e[1] - arm.s[1], M = Math.hypot(vx, vy) || 1, nx = -vy / M * 6, ny = vx / M * 6;
+    ctx.strokeStyle = 'rgba(22,34,60,.72)'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+    for (const t of [0.3, 0.5, 0.7]) {
+      const P = lp(arm.s, arm.e, t), Q = lp(arm.s, arm.e, t + 0.1);
+      ctx.beginPath(); ctx.moveTo(P[0] + nx, P[1] + ny); ctx.lineTo(Q[0], Q[1]); ctx.lineTo(P[0] - nx, P[1] - ny); ctx.stroke();
+    }
+  }
+  if (sleeve) {
+    limb(ctx, [arm.s, arm.e], 22, sleeve);
+    limb(ctx, [arm.e, lp(arm.e, wrist, 0.45)], 20, sleeve);
+  }
+  drawGlove(ctx, arm.g, arm.e, glove);
+}
+
+// look: {skin, hairStyle, hairColor, beard, shorts, gloves, shoes, outfit}; x,y = נקודת הרגליים; dir: 1 פונה ימינה, -1 שמאלה
+function drawFighter(ctx, look, x, y, dir, pose, s) {
+  const p = Object.assign({}, DEFAULT_POSE, pose || {});
+  ctx.save();
+  ctx.translate(x, y);
+  // צל רך על הרצפה
+  ctx.save(); ctx.translate(-dir * p.fall * 100 * s, 3 * s); ctx.scale(1, 0.17);
+  const R = (58 + p.fall * 80) * s, sg = ctx.createRadialGradient(0, 0, 0, 0, 0, R);
+  sg.addColorStop(0, 'rgba(0,0,0,.55)'); sg.addColorStop(0.6, 'rgba(0,0,0,.25)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = sg; circle(ctx, 0, 0, R); ctx.restore();
+  ctx.scale(dir * s, s);
+  if (p.fall > 0) ctx.rotate(-p.fall * Math.PI / 2 * 0.96);
+
+  const by = p.duck * 24 - p.bob, lx = p.leanX;
+  const skin = look.skin, skinB = shadeHex(skin, -0.14);
+  const st = p.stride;
+  const hipB = [-9, -94 + by], hipF = [11, -94 + by];
+  const footBx = -30 - st, footFx = 30 + st;
+  const ankB = [footBx - 3, -30], ankF = [footFx - 2, -30];
+  const kneeB = [(hipB[0] + ankB[0]) / 2 + 8 + p.duck * 10, (hipB[1] + ankB[1]) / 2 + 2];
+  const kneeF = [(hipF[0] + ankF[0]) / 2 + 10 + p.duck * 12, (hipF[1] + ankF[1]) / 2 + 2];
+  const of = look.outfit || {};
+  const robe = p.robe && of.robe ? WARDROBE_BY_ID[of.robe] : null;
+  const top = of.top ? WARDROBE_BY_ID[of.top] : null;
+  const sleeveR = robe ? shade(robe.color, -0.25) : null, sleeveL = robe ? robe.color : null;
+  const arms = computeArms(p, lx, by);
+  const rearFront = p.block > 0.5 || p.win > 0.5;
+
+  // רגל אחורית
+  taper(ctx, hipB, kneeB, 28, 19, skinB, [0.45, 1.12]);
+  taper(ctx, kneeB, ankB, 19, 12, skinB, [0.3, 1.2]);
+  shoe(ctx, footBx, shadeHex(look.shoes, -0.2));
+  if (!rearFront) drawArm(ctx, arms.rear, skinB, shadeHex(look.gloves, -0.2), of.tattoo, sleeveR);
+  // רגל קדמית
+  taper(ctx, hipF, kneeF, 29, 20, skin, [0.45, 1.12]);
+  taper(ctx, kneeF, ankF, 20, 12.5, skin, [0.3, 1.22]);
+  shoe(ctx, footFx, look.shoes);
+  drawTorso(ctx, skin, lx, by, p);
+  if (top) drawTop(ctx, top, lx, by);
+  drawShorts(ctx, look.shorts, by, of.pattern);
+  if (of.neck && !robe) drawNeck(ctx, of.neck, lx, by);
+  if (robe) drawRobe(ctx, robe, lx, by);
+  drawHead(ctx, look, 6 + lx - p.snap * 12, -218 + by + p.snap * 3, p);
+  if (rearFront) drawArm(ctx, arms.rear, skinB, look.gloves, of.tattoo, sleeveR);
+  drawArm(ctx, arms.lead, skin, look.gloves, of.tattoo, sleeveL);
+  ctx.restore();
+}
+
+// ===== הזירה =====
+// השכבות הסטטיות מצוירות פעם אחת לקנבס נסתר (מטמון), ובכל פריים מציירים רק מה שזז.
+const Scene = { sc: 0, crowd: null, grain: null, mat: null, layers: null };
+const ARENA_W = 960, ARENA_H = 440, ARENA_FLOOR = 398, LED_Y = 262, MAT_TOP = 318;
+
+function mkCanvas(w, h, fn) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); fn(c.getContext('2d'), c.width, c.height); return c; }
+
+function sceneAssets() {
+  if (Scene.crowd) return;
+  const tones = ['#141821', '#1a1f2a', '#11141b', '#20252f', '#171a22', '#231d22'];
+  const crowd = [];
+  for (let row = 0; row < 6; row++) {
+    for (let x = -20; x < 990; x += 19 + row * 2.2) {
+      crowd.push({ x: x + (Math.random() - 0.5) * 8, y: 118 + row * 25 + (Math.random() - 0.5) * 5, r: 8 + row * 1.5 + Math.random() * 1.5, c: tones[(Math.random() * tones.length) | 0], row, grp: Math.random() < 0.5 ? 0 : 1, phone: Math.random() < 0.04 });
+    }
+  }
+  Scene.crowd = crowd;
+  Scene.grain = mkCanvas(200, 200, (g, w, h) => {
+    const id = g.createImageData(w, h);
+    for (let i = 0; i < id.data.length; i += 4) { const v = Math.random() * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 16; }
+    g.putImageData(id, 0, 0);
+  });
+  Scene.mat = mkCanvas(128, 128, (g, w, h) => {
+    const id = g.createImageData(w, h);
+    for (let i = 0; i < id.data.length; i += 4) { const v = Math.random() * 40; id.data[i] = v; id.data[i + 1] = v; id.data[i + 2] = v + 10; id.data[i + 3] = 40; }
+    g.putImageData(id, 0, 0);
+    g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = 1;
+    for (let y = 0; y < h; y += 4) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+  });
+}
+
+// שכבה בגודל W×h (יחידות לוגיות) החל מ-y0, ברזולוציה sc
+function layer(sc, y0, h, paint) {
+  return { y0, h, c: mkCanvas(ARENA_W * sc, h * sc, g => { g.scale(sc, sc); g.translate(0, -y0); paint(g); }) };
+}
+
+function buildLayers(sc) {
+  sceneAssets();
+  const W = ARENA_W, H = ARENA_H, floor = ARENA_FLOOR;
+  const L = {};
+  L.bg = layer(sc, 0, H, g => {
+    const bg = g.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#030405'); bg.addColorStop(0.5, '#0a0c12'); bg.addColorStop(1, '#06070a');
+    g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  });
+  // שורות קהל: שתי קבוצות בכל שורה, כדי שיקפצו בקצב שונה
+  L.crowd = [];
+  for (let row = 0; row < 6; row++) for (let grp = 0; grp < 2; grp++) {
+    const y0 = 118 + row * 25 - 22 - row * 1.5, h = 64 + row * 4;
+    L.crowd.push({ row, grp, ...layer(sc, y0, h, g => {
+      for (const c of Scene.crowd) {
+        if (c.row !== row || c.grp !== grp) continue;
+        g.fillStyle = c.c;
+        ell(g, c.x, c.y + c.r * 1.9, c.r * 1.55, c.r * 1.25);
+        circle(g, c.x, c.y, c.r);
+        g.strokeStyle = `rgba(255,226,190,${0.05 + c.row * 0.035})`; g.lineWidth = 1.5;
+        g.beginPath(); g.arc(c.x, c.y, c.r - 0.5, Math.PI * 1.15, Math.PI * 1.85); g.stroke();
+        if (c.phone) { g.fillStyle = 'rgba(210,230,255,.8)'; g.fillRect(c.x + 4, c.y + c.r * 0.6, 2.5, 4); }
+      }
+    }) });
+  }
+  L.mid = layer(sc, 80, 220, g => {
+    const hz = g.createLinearGradient(0, 90, 0, 230);
+    hz.addColorStop(0, 'rgba(12,14,20,.75)'); hz.addColorStop(1, 'rgba(12,14,20,0)');
+    g.fillStyle = hz; g.fillRect(0, 90, W, 140);
+    const lg = g.createLinearGradient(0, LED_Y, 0, LED_Y + 26);
+    lg.addColorStop(0, '#12070a'); lg.addColorStop(0.5, '#1d0a0f'); lg.addColorStop(1, '#0c0507');
+    g.fillStyle = lg; g.fillRect(0, LED_Y, W, 26);
+    g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, LED_Y + 26, W, 3);
+  });
+  // פס טקסט ה-LED (נגלל)
+  L.led = { c: mkCanvas(480 * sc, 26 * sc, g => {
+    g.scale(sc, sc);
+    g.font = '15px "Secular One", Rubik, sans-serif'; g.textBaseline = 'middle'; g.textAlign = 'center';
+    g.shadowColor = 'rgba(255,60,60,.8)'; g.shadowBlur = 8; g.fillStyle = 'rgba(255,110,100,.85)';
+    g.fillText('הדרך לחגורה', 120, 13); g.fillText('ליל האליפות', 360, 13);
+  }) };
+  L.ring = layer(sc, 0, H, g => {
+    g.save();
+    g.beginPath(); g.moveTo(70, MAT_TOP); g.lineTo(W - 70, MAT_TOP); g.lineTo(W + 60, H); g.lineTo(-60, H); g.closePath(); g.clip();
+    const mg = g.createLinearGradient(0, MAT_TOP, 0, H);
+    mg.addColorStop(0, '#16283f'); mg.addColorStop(1, '#1d3656');
+    g.fillStyle = mg; g.fillRect(0, MAT_TOP, W, H - MAT_TOP);
+    g.globalAlpha = 0.6; g.fillStyle = g.createPattern(Scene.mat, 'repeat'); g.fillRect(0, MAT_TOP, W, H - MAT_TOP); g.globalAlpha = 1;
+    g.save(); g.translate(W / 2, 372); g.scale(1, 0.26);
+    g.strokeStyle = 'rgba(255,255,255,.08)'; g.lineWidth = 10; g.beginPath(); g.arc(0, 0, 150, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = 'rgba(255,255,255,.07)'; g.font = '76px "Secular One", Rubik, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('הדרך לחגורה', 0, 0); g.restore();
+    g.save(); g.translate(W / 2, floor - 6); g.scale(1, 0.2);
+    const pool = g.createRadialGradient(0, 0, 0, 0, 0, 460);
+    pool.addColorStop(0, 'rgba(255,244,222,.34)'); pool.addColorStop(0.55, 'rgba(255,244,222,.12)'); pool.addColorStop(1, 'rgba(255,244,222,0)');
+    g.fillStyle = pool; circle(g, 0, 0, 460); g.restore();
+    g.restore();
+    g.strokeStyle = 'rgba(255,255,255,.1)'; g.lineWidth = 2; g.beginPath(); g.moveTo(70, MAT_TOP); g.lineTo(W - 70, MAT_TOP); g.stroke();
+    const post = (x, corner) => {
+      const pg = g.createLinearGradient(x - 7, 0, x + 7, 0);
+      pg.addColorStop(0, '#2a2e36'); pg.addColorStop(0.45, '#9aa1ad'); pg.addColorStop(0.6, '#d9dde4'); pg.addColorStop(1, '#3a3f49');
+      g.fillStyle = pg; g.fillRect(x - 6, 214, 12, 112);
+      for (const y of [236, 266, 296]) {
+        const tg = g.createLinearGradient(x - 11, 0, x + 11, 0);
+        tg.addColorStop(0, shade(corner, -0.5)); tg.addColorStop(0.5, shade(corner, 0.15)); tg.addColorStop(1, shade(corner, -0.45));
+        g.fillStyle = tg; rr(g, x - 11, y - 8, 22, 16, 5); g.fill();
+      }
+    };
+    post(64, '#c62f38'); post(W - 64, '#2d5fc4');
+    for (const [c, y] of [['#d8d8de', 236], ['#c93740', 266], ['#d8d8de', 296]]) {
+      g.lineCap = 'round';
+      g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = 6; g.beginPath(); g.moveTo(72, y + 2); g.quadraticCurveTo(W / 2, y + 9, W - 72, y + 2); g.stroke();
+      g.strokeStyle = c; g.lineWidth = 4.5; g.beginPath(); g.moveTo(72, y); g.quadraticCurveTo(W / 2, y + 7, W - 72, y); g.stroke();
+      g.strokeStyle = 'rgba(255,255,255,.45)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(72, y - 1.5); g.quadraticCurveTo(W / 2, y + 5.5, W - 72, y - 1.5); g.stroke();
+    }
+    g.fillStyle = 'rgba(240,240,245,.8)';
+    for (const x of [270, 480, 690]) g.fillRect(x - 2, 236, 4, 64);
+    g.fillStyle = '#15171d'; g.fillRect(0, 10, W, 9);
+    g.globalCompositeOperation = 'lighter';
+    for (const lx of [200, 400, 560, 760]) {
+      const beam = g.createLinearGradient(0, 18, 0, floor);
+      beam.addColorStop(0, 'rgba(255,238,210,.09)'); beam.addColorStop(1, 'rgba(255,238,210,0)');
+      g.fillStyle = beam; g.beginPath(); g.moveTo(lx - 10, 18); g.lineTo(lx + 10, 18); g.lineTo(lx + 130 + (lx - W / 2) * 0.2, floor); g.lineTo(lx - 130 + (lx - W / 2) * 0.2, floor); g.closePath(); g.fill();
+      const lamp = g.createRadialGradient(lx, 18, 0, lx, 18, 38);
+      lamp.addColorStop(0, 'rgba(255,248,230,.95)'); lamp.addColorStop(0.2, 'rgba(255,238,200,.35)'); lamp.addColorStop(1, 'rgba(255,238,200,0)');
+      g.fillStyle = lamp; circle(g, lx, 18, 38);
+    }
+  });
+  L.front = layer(sc, 0, H, g => {
+    g.lineCap = 'round';
+    g.strokeStyle = 'rgba(0,0,0,.5)'; g.lineWidth = 9; g.beginPath(); g.moveTo(-10, H - 5); g.lineTo(W + 10, H - 5); g.stroke();
+    const rg = g.createLinearGradient(0, H - 12, 0, H);
+    rg.addColorStop(0, '#f2f2f5'); rg.addColorStop(1, '#8d8f96');
+    g.strokeStyle = rg; g.lineWidth = 7; g.beginPath(); g.moveTo(-10, H - 8); g.lineTo(W + 10, H - 8); g.stroke();
+    const v = g.createRadialGradient(W / 2, H * 0.55, H * 0.45, W / 2, H * 0.55, W * 0.72);
+    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.6)');
+    g.fillStyle = v; g.fillRect(0, 0, W, H);
+  });
+  return L;
+}
+
+function sceneLayers(ctx) {
+  const m = ctx.getTransform(), sc = Math.min(2, Math.max(0.5, Math.round(Math.hypot(m.a, m.b) * 4) / 4));
+  if (!Scene.layers || Scene.sc !== sc) { Scene.layers = buildLayers(sc); Scene.sc = sc; }
+  return Scene.layers;
+}
+// הפונטים נטענים אחרי הציור הראשון: בונים מחדש את השכבות כשהם מוכנים
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { Scene.layers = null; });
+
+const blit = (ctx, l, dy = 0) => ctx.drawImage(l.c, 0, l.y0 + dy, ARENA_W, l.h);
+
+// W×H = 960×440 (יחידות לוגיות)
+function drawArenaScene(ctx, W, H, t, hype = 0.3, flashes = []) {
+  const L = sceneLayers(ctx);
+  blit(ctx, L.bg);
+  for (const cr of L.crowd) {
+    const jump = Math.max(0, Math.sin(t * (3.5 + cr.row * 0.6) + cr.row * 1.7 + cr.grp * 2.1)) * hype * (3 + cr.row);
+    blit(ctx, cr, -jump);
+  }
+  blit(ctx, L.mid);
+  for (const f of flashes) {
+    const a = 1 - f.t / 0.18, fg = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, 18);
+    fg.addColorStop(0, `rgba(255,255,255,${a})`); fg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = fg; ctx.fillRect(f.x - 18, f.y - 18, 36, 36);
+  }
+  const off = (t * 40) % 480;
+  for (let x = -480 + off; x < ARENA_W; x += 480) ctx.drawImage(L.led.c, x, LED_Y, 480, 26);
+  blit(ctx, L.ring);
+}
+
+// חלק קדמי: חבל קדמי, ויניט וגרעין — אחרי הלוחמים
+function drawArenaFront(ctx, W, H) {
+  const L = sceneLayers(ctx);
+  blit(ctx, L.front);
+  ctx.save();
+  const ox = (Math.random() * 200) | 0, oy = (Math.random() * 200) | 0;
+  ctx.translate(-ox, -oy); ctx.fillStyle = ctx.createPattern(Scene.grain, 'repeat'); ctx.fillRect(ox, oy, W, H);
+  ctx.restore();
+}
+
+// ===== לולאת אנימציה לתצוגות מקדימות =====
+const Anims = new Set();
+function sizeCanvas(c) {
+  const dpr = Math.min(2, window.devicePixelRatio || 1), w = c.clientWidth, h = c.clientHeight;
+  if (!w || !h) return false;
+  if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+  return true;
+}
+function addAnim(canvas, fn) { const a = { canvas, fn, t0: performance.now() }; Anims.add(a); return a; }
+(function animLoop(now) {
+  for (const a of Anims) {
+    if (!a.canvas.isConnected) { Anims.delete(a); continue; }
+    if (!sizeCanvas(a.canvas)) continue;
+    const ctx = a.canvas.getContext('2d'), dpr = a.canvas.width / a.canvas.clientWidth;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, a.canvas.clientWidth, a.canvas.clientHeight);
+    a.fn(ctx, a.canvas.clientWidth, a.canvas.clientHeight, (now - a.t0) / 1000);
+  }
+  requestAnimationFrame(animLoop);
+})(performance.now());
+
+// תמונה סטטית ממוקדת בפריט לבוש (למלתחה)
+function drawPortrait(canvas, look, slot) {
+  if (!sizeCanvas(canvas)) return;
+  const ctx = canvas.getContext('2d'), w = canvas.clientWidth, h = canvas.clientHeight, dpr = canvas.width / w;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+  const f = { head: [1.55, -220, -2], face: [1.7, -214, 8], neck: [1.25, -182, 4], top: [0.95, -160, 0], tattoo: [1.05, -165, 7], pattern: [1.1, -108, 0], robe: [0.4, -140, 0] }[slot] || [0.5, -130, 0];
+  const s = f[0] * h / 100;
+  drawFighter(ctx, look, w / 2 - (8 + f[2]) * s, h / 2 - f[1] * s, 1, { robe: slot === 'robe' }, s);
+}
+
+function fighterPreview(canvas, getLook, dir = 1, opts = {}) {
+  return addAnim(canvas, (ctx, w, h, t) => {
+    const s = Math.min(h / 300, w / 190);
+    const pose = { bob: Math.abs(Math.sin(t * 4.2 + (opts.phase || 0))) * 3, sway: t * 2.2 + (opts.phase || 0) };
+    if (opts.jab) { const c = (t + (opts.phase || 0)) % 3.4; if (c < 0.34) pose.lead = Math.sin(c / 0.34 * Math.PI); }
+    if (opts.win) { pose.win = 1; pose.bob = 0; }
+    if (opts.robe) pose.robe = true;
+    const g = ctx.createRadialGradient(w / 2, h - 10 * s, 4, w / 2, h - 10 * s, w * 0.5);
+    g.addColorStop(0, opts.glow || 'rgba(255,255,255,.08)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    drawFighter(ctx, getLook(), w / 2 - dir * 14 * s, h - 12 * s, dir, pose, s);
+  });
+}
+
+</script>
+<script>
+// ===== מנוע הקרב =====
+const FW = 960, FH = 440, FLOOR = 398, RING_L = 110, RING_R = 850, MIN_DIST = 92, FSCALE = 1.18, DODGE_T = 0.38;
+const PUNCHES = {
+  jab:   { name: 'ג׳אב',    dmg: 5,  sta: 7,  wind: 0.11, rec: 0.17, reach: 165, stun: 0.12, push: 6 },
+  cross: { name: 'קרוס',    dmg: 10, sta: 13, wind: 0.19, rec: 0.26, reach: 160, stun: 0.24, push: 12 },
+  upper: { name: 'אפרקאט',  dmg: 15, sta: 19, wind: 0.27, rec: 0.33, reach: 125, stun: 0.4,  push: 18 }
+};
+const buzz = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* */ } };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+let _actionId = 0;
+
+class Fighter {
+  constructor(c) {
+    this.name = c.name; this.look = c.look; this.st = c.stats; this.isPlayer = c.isPlayer; this.x = c.x; this.dir = c.dir;
+    this.style = c.style || 'balanced';
+    this.pk = { dmg: 1, sta: 1, spd: 1, hp: 1, move: 1, counter: 1.35, dodgeCd: 1, dodgeSta: 1, chain: 0, reach: 0, block: 1, regen: 1, dodgeHit: 0, ...STYLES[this.style].perk };
+    this.scale = FSCALE * (c.size || 1);
+    this.chainN = 0; this.chainT = 0; this.dodgeBuff = 0; this.comboLeft = 0; this.counterQ = false;
+    this.maxHp = Math.round((100 + this.st.chin * 3) * this.pk.hp); this.hp = this.maxHp;
+    this.maxSta = 100 + this.st.stamina * 2; this.sta = this.maxSta * (c.staStart == null ? 1 : c.staStart);
+    this.action = null; this.combo = null; this.blocking = false; this.blockV = 0;
+    this.dodgeT = 0; this.dodgeCd = 0; this.stun = 0; this.snap = 0;
+    this.kd = 0; this.down = false; this.fall = 0; this.winV = 0;
+    this.bobT = Math.random() * 6; this.walkT = 0; this.moveAmt = 0;
+    this.score = 0; this.thrown = 0; this.landed = 0; this.hpLag = this.maxHp;
+    this.aiT = 0; this.atkCd = 1; this.blockT = 0; this.want = 140; this.seen = -1; this.punished = -1;
+  }
+  get sf() { return clamp(1.22 - this.st.speed / 110, 0.6, 1.2) * this.pk.spd; }
+  get moveSp() { return (this.isPlayer ? 140 + this.st.speed * 2.4 : 130 + this.st.speed * 2.2) * this.pk.move; }
+  canAct() { return !this.action && this.stun <= 0 && !this.down && this.dodgeT <= 0; }
+  throw(type) {
+    if (!this.canAct() || this.blocking) return false;
+    const P = PUNCHES[type], cost = P.sta * this.pk.sta, tired = this.sta < cost, slow = tired ? 1.35 : 1;
+    this.action = {
+      id: ++_actionId, type, t: 0, hit: false, result: null,
+      wind: P.wind * this.sf * slow, rec: P.rec * this.sf * slow,
+      power: tired ? 0.45 : 0.55 + 0.45 * this.sta / this.maxSta
+    };
+    this.sta = Math.max(0, this.sta - cost); this.thrown++;
+    return true;
+  }
+  dodge() {
+    const cost = 10 * this.pk.dodgeSta;
+    if (!this.canAct() || this.dodgeCd > 0 || this.sta < cost) return false;
+    this.dodgeT = DODGE_T; this.dodgeCd = 0.75 * this.pk.dodgeCd; this.sta -= cost; this.blocking = false;
+    if (this.pk.dodgeHit) this.dodgeBuff = DODGE_T + 0.8;
+    return true;
+  }
+}
+
+class Fight {
+  constructor(o) {
+    this.canvas = o.canvas; this.ctx = this.canvas.getContext('2d'); this.hud = o.hud; this.onEnd = o.onEnd; this.onPause = o.onPause;
+    this.rounds = o.rounds; this.round = 1; this.roundLen = 60; this.timer = this.roundLen;
+    this.p = new Fighter({ ...o.player, isPlayer: true, x: 330, dir: 1 });
+    this.o = new Fighter({ ...o.opp, style: o.oppStyle, isPlayer: false, x: 630, dir: -1 });
+    this.skill = o.skill;
+    this.state = 'intro'; this.stateT = 0; this.shake = 0; this.hype = 0.3;
+    this.particles = []; this.rings = []; this.texts = []; this.flashes = [];
+    this.input = { left: false, right: false, block: false };
+    this.paused = false; this.ended = false; this.mash = 0; this.mashNeed = 0; this.count = 0;
+    this.slowmo = 0; this.elapsed = 0;
+    this.kd = e => this.onKey(e, true); this.ku = e => this.onKey(e, false);
+    this.vis = () => { if (document.hidden && !this.paused && this.state !== 'over') this.togglePause(); };
+    window.addEventListener('keydown', this.kd); window.addEventListener('keyup', this.ku);
+    document.addEventListener('visibilitychange', this.vis);
+    if (document.activeElement) document.activeElement.blur();
+    this.last = performance.now();
+    this.banner('סיבוב 1', '', 1.6);
+    this.raf = requestAnimationFrame(t => this.loop(t));
+  }
+  destroy() {
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('keydown', this.kd); window.removeEventListener('keyup', this.ku);
+    document.removeEventListener('visibilitychange', this.vis);
+  }
+  // ---------- קלט ----------
+  onKey(e, down) {
+    const c = e.code;
+    if (c === 'ArrowLeft' || c === 'KeyA') this.input.left = down;
+    else if (c === 'ArrowRight' || c === 'KeyD') this.input.right = down;
+    else if (c === 'ArrowDown' || c === 'KeyS') this.input.block = down;
+    else if (['KeyJ', 'KeyZ', 'KeyK', 'KeyX', 'KeyL', 'KeyC', 'Space', 'ShiftLeft', 'ShiftRight', 'ArrowUp', 'KeyW', 'Escape', 'KeyP'].includes(c)) {
+      if (down && !e.repeat) {
+        const map = { KeyJ: 'jab', KeyZ: 'jab', KeyK: 'cross', KeyX: 'cross', KeyL: 'upper', KeyC: 'upper', Space: 'dodge', ShiftLeft: 'dodge', ShiftRight: 'dodge', ArrowUp: 'dodge', KeyW: 'dodge', Escape: 'pause', KeyP: 'pause' };
+        this.cmd(map[c]);
+      }
+    } else return;
+    e.preventDefault();
+  }
+  cmd(c) {
+    if (c === 'pause') { if (this.state !== 'over') this.togglePause(); return; }
+    if (this.paused) return;
+    if (this.state === 'down' && this.downF === this.p) { this.mash++; Sfx.click(); return; }
+    if (this.state !== 'fight') return;
+    if (c === 'dodge') { if (this.p.dodge()) Sfx.whoosh(0.8); }
+    else if (PUNCHES[c] && this.p.throw(c)) Sfx.whoosh();
+  }
+  togglePause() {
+    this.paused = !this.paused;
+    this.input = { left: false, right: false, block: false };
+    if (this.onPause) this.onPause(this.paused);
+  }
+
+  // ---------- לולאה ----------
+  loop(now) {
+    let dt = Math.min(0.033, (now - this.last) / 1000); this.last = now;
+    if (this.slowmo > 0 && !this.paused) { this.slowmo -= dt; dt *= 0.28; }
+    if (!this.paused) this.update(dt);
+    this.render();
+    this.raf = requestAnimationFrame(t => this.loop(t));
+  }
+
+  update(dt) {
+    this.stateT += dt;
+    const p = this.p, o = this.o;
+    for (const f of [p, o]) {
+      f.bobT += dt; f.snap = Math.max(0, f.snap - dt * 4);
+      f.hpLag = f.hpLag > f.hp ? Math.max(f.hp, f.hpLag - f.maxHp * 0.35 * dt) : f.hp;
+      f.fall += ((f.down ? 1 : 0) - f.fall) * Math.min(1, dt * (f.down ? 7 : 5));
+      f.blockV += ((f.blocking ? 1 : 0) - f.blockV) * Math.min(1, dt * 18);
+    }
+    this.shake = Math.max(0, this.shake - dt * 30);
+    this.hype = Math.max(0.25, this.hype - dt * 0.15);
+    this.updateFx(dt);
+
+    if (this.state === 'intro') {
+      p.blocking = o.blocking = false;
+      if (this.stateT > 1.6) { this.state = 'fight'; this.stateT = 0; Sfx.bell(); this.banner('קרב!', '', 0.7); }
+    } else if (this.state === 'fight') {
+      this.timer -= dt; this.elapsed += dt;
+      if (this.timer <= 0) { this.timer = 0; this.endRound(); return; }
+      this.playerControl(dt);
+      this.ai(dt);
+      this.step(p, o, dt);
+      if (this.state === 'fight') this.step(o, p, dt);
+      this.separate();
+    } else if (this.state === 'down') {
+      this.updateDown(dt);
+    } else if (this.state === 'break') {
+      if (this.stateT > 3.4) this.nextRound();
+    } else if (this.state === 'over') {
+      const w = this.result.won ? p : o;
+      w.winV = Math.min(1, w.winV + dt * 3); w.blocking = false;
+      if (this.stateT > 3 && !this.ended) { this.ended = true; this.onEnd(this.result); }
+    }
+  }
+
+  playerControl(dt) {
+    const p = this.p;
+    p.blocking = this.input.block && !p.action && p.stun <= 0 && p.dodgeT <= 0 && !p.down;
+    const mv = (this.input.right ? 1 : 0) - (this.input.left ? 1 : 0);
+    const can = mv && p.stun <= 0 && p.dodgeT <= 0;
+    if (can) {
+      const sp = p.moveSp * (p.blocking ? 0.45 : 1) * (p.action ? 0.3 : 1);
+      p.x += mv * sp * dt; p.walkT += dt * mv;
+    }
+    p.moveAmt += ((can ? 1 : 0) - p.moveAmt) * Math.min(1, dt * 10);
+  }
+
+  ai(dt) {
+    const me = this.o, foe = this.p, sk = this.skill, A = { ...AI_BASE, ...STYLES[me.style].ai };
+    if (me.down) return;
+    me.aiT -= dt; me.atkCd -= dt; me.blockT -= dt;
+    const dist = me.x - foe.x;
+    // תגובה לאגרוף של השחקן
+    if (foe.action && !foe.action.hit && foe.action.id !== me.seen) {
+      me.seen = foe.action.id;
+      const P = PUNCHES[foe.action.type];
+      if (dist < P.reach + foe.pk.reach + 25 && me.stun <= 0 && !me.action) {
+        if (Math.random() < 0.1 + sk * 0.55 + A.react) {
+          if (Math.random() < A.blockPref || me.sta < 12) me.blockT = rand(0.3, 0.65);
+          else if (me.dodge()) { Sfx.whoosh(0.6); if (A.dodgeCounter) me.counterQ = true; }
+        }
+      }
+    }
+    // עונש על החטאה
+    if (foe.action && foe.action.hit && foe.action.result !== 'land' && foe.action.id !== me.punished && dist < 165 + me.pk.reach) {
+      me.punished = foe.action.id;
+      if (Math.random() < (0.15 + sk * 0.5) * A.punish) { me.blockT = 0; me.blocking = false; if (me.throw('cross')) Sfx.whoosh(0.6); }
+    }
+    // מכה מיד אחרי התחמקות (מתחמק / מתקיף-נגד)
+    if (me.counterQ && me.canAct()) {
+      me.counterQ = false; me.blockT = 0; me.blocking = false;
+      if (me.throw(dist < 125 ? 'upper' : 'cross')) Sfx.whoosh(0.6);
+    }
+    me.blocking = me.blockT > 0 && !me.action && me.stun <= 0 && me.dodgeT <= 0;
+    if (me.aiT <= 0) {
+      me.aiT = rand(0.6, 1.4);
+      const low = me.sta < me.maxSta * 0.28 || me.hp < me.maxHp * 0.25;
+      const retreatOk = me.style !== 'pressure';
+      me.want = low && retreatOk ? rand(175, 235) : Math.random() < A.aggr ? rand(A.near[0], A.near[1]) : rand(A.far[0], A.far[1]);
+      if (!low && Math.random() < 0.18 * sk && me.canAct()) me.blockT = rand(0.3, 0.7);
+    }
+    let moving = false;
+    if (me.stun <= 0 && me.dodgeT <= 0) {
+      const diff = dist - me.want;
+      if (Math.abs(diff) > 8) {
+        const sp = me.moveSp * (me.blocking ? 0.45 : 1) * (me.action ? 0.3 : 1);
+        const stepX = Math.sign(diff) * Math.min(sp * dt, Math.abs(diff));
+        me.x -= stepX; me.walkT += dt * Math.sign(diff); moving = true;
+      }
+    }
+    me.moveAmt += ((moving ? 1 : 0) - me.moveAmt) * Math.min(1, dt * 10);
+    if (me.canAct() && !me.blocking && me.atkCd <= 0 && dist < 175 + me.pk.reach) {
+      let type = dist < 128 && Math.random() < A.upper ? 'upper' : Math.random() < A.jab ? 'jab' : 'cross';
+      if (dist > PUNCHES[type].reach + me.pk.reach + 5) type = 'jab';
+      if (me.sta >= PUNCHES[type].sta * me.pk.sta || Math.random() < 0.2) {
+        if (me.throw(type)) {
+          Sfx.whoosh(0.6);
+          if (Math.random() < A.combo + sk * 0.3) { me.comboLeft = A.comboLen - 1; me.combo = this.nextComboPunch(type); }
+          if (A.retreat) { me.want = rand(A.far[0], A.far[1]) + 15; me.aiT = rand(0.5, 0.9); }
+        }
+      }
+      me.atkCd = rand(0.35, 1.1) * A.tempo * (1.45 - sk * 0.8);
+    }
+  }
+  nextComboPunch(prev) {
+    const r = Math.random();
+    if (prev === 'jab') return r < 0.65 ? 'cross' : r < 0.85 ? 'jab' : 'upper';
+    if (prev === 'cross') return r < 0.5 ? 'upper' : 'jab';
+    return r < 0.6 ? 'cross' : 'jab';
+  }
+
+  step(f, foe, dt) {
+    f.stun = Math.max(0, f.stun - dt); f.dodgeCd = Math.max(0, f.dodgeCd - dt);
+    f.chainT = Math.max(0, f.chainT - dt); f.dodgeBuff = Math.max(0, f.dodgeBuff - dt);
+    if (f.chainT <= 0) f.chainN = 0;
+    if (f.dodgeT > 0) { f.dodgeT -= dt; f.x -= f.dir * 150 * dt; }
+    if (f.action) {
+      const a = f.action; a.t += dt;
+      if (!a.hit && a.t >= a.wind) { this.resolve(f, foe); if (this.state !== 'fight') return; }
+      if (f.action && a.t >= a.wind + a.rec) {
+        f.action = null;
+        if (f.combo) {
+          const c = f.combo; f.combo = null;
+          if (f.throw(c)) { Sfx.whoosh(0.6); if (f.comboLeft > 0) { f.comboLeft--; f.combo = this.nextComboPunch(c); } }
+        }
+      }
+    } else if (!f.down) {
+      f.sta = Math.min(f.maxSta, f.sta + (6 + f.st.stamina * 0.3) * f.pk.regen * dt * (f.blocking ? 0.55 : 1));
+    }
+  }
+
+  separate() {
+    const p = this.p, o = this.o, lo = RING_L, hi = RING_R;
+    p.x = clamp(p.x, lo, hi); o.x = clamp(o.x, lo, hi);
+    const d = o.x - p.x;
+    if (d < MIN_DIST) {
+      const push = (MIN_DIST - d) / 2; p.x -= push; o.x += push;
+      p.x = clamp(p.x, lo, hi); o.x = clamp(o.x, lo, hi);
+      if (o.x - p.x < MIN_DIST) { if (p.x <= lo + 0.5) o.x = p.x + MIN_DIST; else p.x = o.x - MIN_DIST; }
+    }
+  }
+
+  resolve(a, d) {
+    const act = a.action, P = PUNCHES[act.type];
+    act.hit = true; act.result = 'miss';
+    const dist = Math.abs(a.x - d.x);
+    const hx = d.x + d.dir * 8 * d.scale, hy = FLOOR - 214 * d.scale;
+    if (dist > P.reach + a.pk.reach || d.down) return;
+    if (d.dodgeT > 0) { act.result = 'dodge'; this.say('התחמקות!', hx, hy - 40, '#9cc3ff', 22); return; }
+    let dmg = P.dmg * (0.65 + a.st.power / 35) * act.power * a.pk.dmg * (1 - d.st.defense / 220) * rand(0.9, 1.1);
+    const heavy = act.type !== 'jab';
+    if (d.blocking && d.blockV > 0.5) {
+      act.result = 'block';
+      const through = act.type === 'upper' ? 0.4 : 0.12;
+      dmg *= through * (1 - d.st.defense / 300) * d.pk.block;
+      d.sta = Math.max(0, d.sta - P.dmg * 1.1 * (1 - d.st.defense / 150));
+      d.x += a.dir * P.push * 0.5;
+      a.score += dmg * 0.3;
+      this.spark(d.x + d.dir * 40 * d.scale, hy + 10, false, true);
+      Sfx.block();
+      if (act.type === 'upper') this.say('פרץ את השמירה', hx, hy - 40, '#ffd27a', 18);
+    } else {
+      act.result = 'land';
+      const counter = d.action && !d.action.hit;
+      if (counter) { dmg *= a.pk.counter; this.say('קאונטר!', hx, hy - 44, '#ffd27a', 24); }
+      if (a.dodgeBuff > 0 && a.pk.dodgeHit) { dmg *= 1 + a.pk.dodgeHit; a.dodgeBuff = 0; this.say('מכת נגד!', hx, hy - 20, '#c4b1ff', 22); }
+      if (a.pk.chain) {
+        if (a.chainT > 0) a.chainN = Math.min(3, a.chainN + 1);
+        dmg *= 1 + a.pk.chain * a.chainN; a.chainT = 1.2;
+        if (a.chainN >= 2) this.say(`רצף ×${a.chainN + 1}`, hx, hy - 96, '#ffb27a', 20);
+      }
+      if (Math.random() < 0.07 + a.st.power / 800) { dmg *= 1.5; this.say('מכה נקייה!', hx, hy - 70, '#ff8a8f', 26); }
+      d.stun = P.stun; d.snap = 1; d.action = null; d.combo = null; d.comboLeft = 0; d.counterQ = false; d.x += a.dir * P.push;
+      a.landed++; a.score += dmg;
+      this.shake = heavy ? 9 : 4; this.hype = Math.min(1, this.hype + (heavy ? 0.12 : 0.05));
+      this.spark(hx, act.type === 'upper' ? hy + 14 : hy, heavy, false);
+      Sfx.hit(heavy);
+      if (d.isPlayer) buzz(heavy ? 45 : 18);
+    }
+    d.hp -= dmg; d.taken = (d.taken || 0) + dmg;
+    if (d.hp <= 0) this.knockdown(d, a);
+  }
+
+  knockdown(d, a) {
+    d.hp = 0; d.down = true; d.kd++; d.action = null; d.combo = null; d.stun = 0; d.blocking = false; d.dodgeT = 0;
+    a.action = null; a.combo = null; a.blocking = false;
+    a.score += 25;
+    this.state = 'down'; this.stateT = 0; this.count = 0; this.countT = 0; this.downF = d; this.mash = 0;
+    this.slowmo = 0.7;
+    this.mashNeed = Math.max(8, 10 + d.kd * 7 - Math.floor(d.st.chin / 8));
+    this.shake = 14; this.hype = 1;
+    this.input = { left: false, right: false, block: false };
+    Sfx.hit(true); Sfx.crowd();
+    buzz(d.isPlayer ? [120, 60, 220] : 60);
+    this.banner('נוקדאון!', d.isPlayer ? 'לחץ על כפתורי האגרוף במהירות כדי לקום' : '', 1.4);
+    if (!d.isPlayer) {
+      const p = 0.95 - (d.kd - 1) * 0.3 + (d.st.chin - a.st.power) / 80;
+      d.willRise = d.kd < 3 && Math.random() < p;
+      d.riseAt = 3 + Math.floor(Math.random() * 5);
+    }
+  }
+
+  updateDown(dt) {
+    const d = this.downF, a = d === this.p ? this.o : this.p;
+    const home = a === this.p ? 250 : 710;
+    a.x += clamp(home - a.x, -220 * dt, 220 * dt);
+    a.sta = Math.min(a.maxSta, a.sta + 25 * dt);
+    if (d.kd >= 3 && this.stateT > 1.6) { this.finish(a, 'TKO', 'שלושה נוקדאונים בקרב'); return; }
+    this.countT += dt;
+    if (this.countT >= 0.9) {
+      this.countT = 0; this.count++; Sfx.tick();
+      if (this.count >= 10) { this.finish(a, 'KO', 'נספר עד 10'); return; }
+    }
+    if (this.count >= 1 && d.kd < 3) {
+      const rise = d.isPlayer ? this.mash >= this.mashNeed && this.count >= 2 : d.willRise && this.count >= d.riseAt;
+      if (rise) {
+        d.down = false; d.hp = Math.max(d.maxHp * 0.2, d.maxHp * (0.55 - 0.12 * d.kd)); d.hpLag = d.hp;
+        d.sta = Math.max(d.sta, d.maxSta * 0.6); d.stun = 0.3;
+        this.state = 'fight'; this.stateT = 0;
+        this.banner('קם על הרגליים!', '', 1);
+      }
+    }
+  }
+
+  endRound() {
+    Sfx.bell();
+    if (this.round >= this.rounds) { this.decision(); return; }
+    this.state = 'break'; this.stateT = 0;
+    this.p.action = this.o.action = null; this.p.blocking = this.o.blocking = false;
+    this.banner(`סוף סיבוב ${this.round}`, 'מנוחה בפינה…', 3.2);
+  }
+  nextRound() {
+    this.round++; this.timer = this.roundLen;
+    for (const f of [this.p, this.o]) {
+      f.hp = Math.min(f.maxHp, f.hp + f.maxHp * 0.22); f.hpLag = f.hp; f.sta = f.maxSta;
+      f.action = null; f.combo = null; f.stun = 0; f.dodgeT = 0;
+    }
+    this.p.x = 330; this.o.x = 630;
+    this.state = 'intro'; this.stateT = 0;
+    this.banner(this.round === this.rounds ? 'סיבוב אחרון' : `סיבוב ${this.round}`, '', 1.6);
+  }
+  decision() {
+    const ps = this.p.score, os = this.o.score, won = ps >= os, tot = ps + os || 1, r = this.rounds, cards = [];
+    for (let j = 0; j < 3; j++) {
+      const m = clamp(Math.round(Math.abs(ps - os) / tot * r * 3 + rand(-1, 1)), 1, r * 2), w = 10 * r;
+      cards.push(won ? `${w}-${w - m}` : `${w - m}-${w}`);
+    }
+    this.finish(won ? this.p : this.o, 'DEC', 'החלטת שופטים', cards);
+  }
+  finish(winner, method, note, cards) {
+    const won = winner === this.p;
+    this.state = 'over'; this.stateT = 0;
+    this.result = {
+      won, method, note, cards: cards || null, round: this.round,
+      landed: this.p.landed, thrown: this.p.thrown, oLanded: this.o.landed, oThrown: this.o.thrown,
+      kdFor: this.o.kd, kdAgainst: this.p.kd
+    };
+    Sfx.crowd();
+    const big = method === 'DEC' ? (won ? 'ניצחון!' : 'הפסד') : method === 'KO' ? 'נוקאאוט!' : 'TKO!';
+    this.banner(big, won ? `${this.p.name} מנצח` : `${this.o.name} מנצח`, 3);
+  }
+  forfeit() {
+    this.paused = false;
+    this.finish(this.o, 'RET', 'כניעה');
+    this.stateT = 2.4;
+  }
+
+  // ---------- אפקטים ----------
+  spark(x, y, heavy, blocked) {
+    const n = blocked ? 6 : heavy ? 16 : 10;
+    for (let i = 0; i < n; i++) {
+      const a = rand(0, Math.PI * 2), sp = rand(80, heavy ? 420 : 280);
+      this.particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 80, life: rand(0.25, 0.55), t: 0, c: blocked ? '#cfd6e4' : Math.random() < 0.5 ? 'rgba(235,245,255,.9)' : 'rgba(190,215,240,.75)', r: rand(1.5, 3.5) });
+    }
+    this.rings.push({ x, y, t: 0, max: heavy ? 60 : 40, c: blocked ? '200,210,230' : '255,226,150' });
+  }
+  say(text, x, y, color, size) { this.texts.push({ text, x, y, color, size, t: 0 }); }
+  banner(text, sub, dur) { this.ban = { text, sub, t: 0, dur }; }
+  updateFx(dt) {
+    for (const q of this.particles) { q.t += dt; q.vy += 700 * dt; q.x += q.vx * dt; q.y += q.vy * dt; }
+    this.particles = this.particles.filter(q => q.t < q.life);
+    for (const r of this.rings) r.t += dt;
+    this.rings = this.rings.filter(r => r.t < 0.3);
+    for (const t of this.texts) { t.t += dt; t.y -= 40 * dt; }
+    this.texts = this.texts.filter(t => t.t < 0.9);
+    if (this.ban) { this.ban.t += dt; if (this.ban.t > this.ban.dur) this.ban = null; }
+    if (Math.random() < dt * (0.4 + this.hype * 4)) this.flashes.push({ x: rand(0, FW), y: rand(130, 250), t: 0 });
+    for (const f of this.flashes) f.t += dt;
+    this.flashes = this.flashes.filter(f => f.t < 0.18);
+  }
+
+  // ---------- ציור ----------
+  poseOf(f) {
+    const p = {
+      block: f.blockV, snap: f.snap, fall: f.fall, hurt: f.stun > 0.05, win: f.winV,
+      bob: f.down || f.winV > 0.5 ? 0 : Math.abs(Math.sin(f.bobT * 4.6)) * 3.6 * (f.sta / f.maxSta * 0.6 + 0.4),
+      sway: f.bobT * 2.3, stride: Math.sin(f.walkT * 14) * f.moveAmt * 7,
+      dmg: Math.min(1, (f.taken || 0) / (f.maxHp * 1.6)), sweat: Math.min(1, this.elapsed / 140)
+    };
+    const a = f.action;
+    if (a) {
+      const e = clamp(a.t < a.wind ? 1 - Math.pow(1 - a.t / a.wind, 2) : 1 - (a.t - a.wind) / a.rec, 0, 1);
+      if (a.type === 'jab') { p.lead = e; p.leanX = e * 4; }
+      else if (a.type === 'cross') { p.rear = e; p.leanX = e * 10; }
+      else { p.rear = e; p.upper = 1; p.leanX = e * 6; p.duck = a.t < a.wind ? Math.sin(e * Math.PI) * 0.3 : 0; }
+    }
+    if (f.dodgeT > 0) { const k = Math.sin((1 - f.dodgeT / DODGE_T) * Math.PI); p.duck = Math.max(p.duck || 0, k * 0.9); p.leanX = -16 * k; }
+    return p;
+  }
+
+  render() {
+    const c = this.canvas;
+    if (!sizeCanvas(c)) return;
+    const ctx = this.ctx, k = c.width / FW, t = performance.now() / 1000;
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    ctx.save();
+    if (this.shake > 0) ctx.translate(rand(-1, 1) * this.shake, rand(-1, 1) * this.shake);
+    drawArenaScene(ctx, FW, FH, t, this.hype, this.flashes, FLOOR);
+    const order = this.o.action && !this.p.action ? [this.p, this.o] : [this.o, this.p];
+    for (const f of order) drawFighter(ctx, f.look, f.x, FLOOR, f.dir, this.poseOf(f), f.scale);
+    for (const q of this.particles) { ctx.globalAlpha = 1 - q.t / q.life; ctx.fillStyle = q.c; circle(ctx, q.x, q.y, q.r); }
+    ctx.globalAlpha = 1;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (const r of this.rings) {
+      const e = r.t / 0.3, rad = 10 + r.max * 0.7 * e, fg = ctx.createRadialGradient(r.x, r.y, 0, r.x, r.y, rad);
+      fg.addColorStop(0, `rgba(${r.c},${0.7 * (1 - e)})`); fg.addColorStop(1, `rgba(${r.c},0)`);
+      ctx.fillStyle = fg; circle(ctx, r.x, r.y, rad);
+    }
+    ctx.restore();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const tx of this.texts) {
+      ctx.globalAlpha = 1 - tx.t / 0.9; ctx.font = `700 ${tx.size}px Rubik, sans-serif`;
+      ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.strokeText(tx.text, tx.x, tx.y);
+      ctx.fillStyle = tx.color; ctx.fillText(tx.text, tx.x, tx.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+    drawArenaFront(ctx, FW, FH, t);
+    this.drawOverlay(ctx);
+    this.updateHud();
+  }
+
+  drawOverlay(ctx) {
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (this.state === 'down') {
+      ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.fillRect(0, 0, FW, FH);
+      if (this.count > 0) {
+        const pulse = 1 + (1 - Math.min(1, this.countT / 0.25)) * 0.25;
+        ctx.save(); ctx.translate(FW / 2, 150); ctx.scale(pulse, pulse);
+        ctx.font = '120px "Secular One", Rubik, sans-serif'; ctx.lineWidth = 10; ctx.strokeStyle = 'rgba(0,0,0,.7)';
+        ctx.strokeText(String(this.count), 0, 0); ctx.fillStyle = '#fff'; ctx.fillText(String(this.count), 0, 0); ctx.restore();
+      }
+      if (this.downF === this.p && this.p.kd < 3) {
+        const w = 320, pr = Math.min(1, this.mash / this.mashNeed);
+        ctx.fillStyle = 'rgba(0,0,0,.6)'; rr(ctx, FW / 2 - w / 2, 236, w, 18, 9); ctx.fill();
+        ctx.fillStyle = pr >= 1 ? '#2ec27e' : '#f4b73f'; rr(ctx, FW / 2 - w / 2 + 3, 239, (w - 6) * pr, 12, 6); ctx.fill();
+        ctx.font = '700 20px Rubik, sans-serif'; ctx.fillStyle = '#fff';
+        ctx.fillText('לחץ על כפתורי האגרוף מהר כדי לקום!', FW / 2, 280);
+      }
+    }
+    if (this.state === 'break') { ctx.fillStyle = 'rgba(5,6,10,.55)'; ctx.fillRect(0, 0, FW, FH); }
+    const b = this.ban;
+    if (b) {
+      const inT = Math.min(1, b.t / 0.18), outT = Math.min(1, (b.dur - b.t) / 0.25), a = Math.min(inT, outT);
+      const y = this.state === 'down' ? 60 : 130;
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(FW / 2, y); const sc = 0.8 + 0.2 * inT; ctx.scale(sc, sc);
+      ctx.font = '64px "Secular One", Rubik, sans-serif'; ctx.lineWidth = 10; ctx.strokeStyle = 'rgba(0,0,0,.75)';
+      ctx.strokeText(b.text, 0, 0); ctx.fillStyle = '#ffffff'; ctx.fillText(b.text, 0, 0);
+      if (b.sub) { ctx.font = '600 22px Rubik, sans-serif'; ctx.lineWidth = 6; ctx.strokeText(b.sub, 0, 52); ctx.fillStyle = '#ffd27a'; ctx.fillText(b.sub, 0, 52); }
+      ctx.restore();
+    }
+  }
+
+  updateHud() {
+    const h = this.hud;
+    const set = (el, f) => {
+      el.hp.style.width = (f.hp / f.maxHp * 100).toFixed(1) + '%';
+      el.lag.style.width = (f.hpLag / f.maxHp * 100).toFixed(1) + '%';
+      el.sta.style.width = (f.sta / f.maxSta * 100).toFixed(1) + '%';
+      el.sta.classList.toggle('low', f.sta < f.maxSta * 0.25);
+      const kd = '●'.repeat(f.kd);
+      if (el.kd.textContent !== kd) el.kd.textContent = kd;
+    };
+    set(h.p, this.p); set(h.o, this.o);
+    const s = Math.ceil(this.timer), txt = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    if (h.time.textContent !== txt) h.time.textContent = txt;
+    const rt = `סיבוב ${this.round}/${this.rounds}`;
+    if (h.round.textContent !== rt) h.round.textContent = rt;
+  }
+}
+
+</script>
+<script>
+// ===== מסכים, קריירה ושמירה =====
+const app = document.getElementById('app');
+let S = load();
+let draft = null, currentFight = null, hubTab = 'fights', wrTry = null;
+if (S && !S.outfit) S.outfit = { owned: [], equip: {} };
+if (S && (S.v || 1) < 2) {
+  // הסולם גדל מ-10 ל-18 יריבים: ממפים את ההתקדמות הישנה למקום המקביל בסולם החדש
+  const map = [0, 2, 3, 5, 6, 8, 9, 10, 14, 17, 18];
+  S.next = map[Math.min(S.next, 10)]; S.style = 'balanced'; S.styles = ['balanced']; S.v = 2;
+}
+
+// מראה השחקן כולל הלבוש (אפשר להוסיף פריט "במדידה")
+function playerLook(tryId) {
+  const equip = { ...(S ? S.outfit.equip : {}) };
+  if (tryId) equip[WARDROBE_BY_ID[tryId].slot] = tryId;
+  return { ...S.look, outfit: equip };
+}
+
+function load() { try { const r = localStorage.getItem(SAVE_KEY); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { /* אין אחסון */ } }
+try { Sfx.on = localStorage.getItem(SAVE_KEY + '-sound') !== 'off'; } catch (e) { /* */ }
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = n => Math.round(n).toLocaleString('en-US');
+
+function toast(msg, kind = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + kind;
+  clearTimeout(toast._t); toast._t = setTimeout(() => { t.className = ''; }, 2200);
+}
+
+// ---------- חישובי קריירה ----------
+function gearBonus(stat) { const g = GEAR.find(x => x.stat === stat); return GEAR_BONUS[S.gear[g.id]]; }
+function effStats() { const s = {}; for (const d of STAT_DEFS) s[d.id] = S.stats[d.id] + gearBonus(d.id); return s; }
+function ovr(st) { return Math.round(Object.values(st).reduce((a, b) => a + b, 0) / 5); }
+function nextOpponent() { return S.next < OPPONENTS.length ? OPPONENTS[S.next] : challenger(S.defenses); }
+function trainCost(lvl) { return 20 + lvl * 4; }
+function workPay() { return 100 + S.record.w * 15; }
+function rankName() {
+  if (S.belts.includes('חגורת אלוף העולם')) return 'אלוף העולם';
+  if (S.next >= WORLD_TIER_AT) return 'דרג עולמי';
+  if (S.belts.length) return 'אלוף לאומי';
+  if (S.next >= NATIONAL_TIER_AT) return 'דרג לאומי';
+  return S.record.w ? 'דרג אזורי' : 'טירון';
+}
+
+// ---------- ניווט ----------
+const isTouch = window.matchMedia('(pointer: coarse)').matches;
+function enterFightMode() {
+  // בטלפון: מסך מלא ונעילה לרוחב (כשהדפדפן מרשה)
+  if (!isTouch) return;
+  try {
+    const el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
+    const p = req && !document.fullscreenElement ? req.call(el) : null;
+    const lock = () => { try { const q = screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape'); if (q && q.catch) q.catch(() => {}); } catch (e) { /* */ } };
+    if (p && p.then) p.then(lock).catch(() => {}); else lock();
+  } catch (e) { /* לא נתמך */ }
+}
+function exitFightMode() {
+  try {
+    if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  } catch (e) { /* */ }
+}
+
+function go(screen, arg) {
+  if (currentFight) { currentFight.destroy(); currentFight = null; }
+  if (screen !== 'fight') exitFightMode();
+  window.scrollTo(0, 0);
+  ({ title: renderTitle, create: renderCreate, hub: renderHub, vs: renderVs, fight: renderFight, result: renderResult })[screen](arg);
+}
+
+// ---------- מסך פתיחה ----------
+function renderTitle() {
+  app.innerHTML = `
+  <section class="screen title-screen">
+    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+    <canvas class="title-duo" aria-hidden="true"></canvas>
+    <h1 class="logo">הדרך לחגורה</h1>
+    <p class="tagline">בנה לוחם משלך, התאמן, נצח יריבים וטפס בדירוג עד לחגורת אלוף העולם.</p>
+    <div class="title-actions">
+      ${S ? `<button class="btn btn-red btn-lg sweep" data-act="continue">המשך קריירה<small>${esc(S.name)} · מאזן ${S.record.w}-${S.record.l}</small></button>` : ''}
+      <button class="btn ${S ? 'btn-ghost' : 'btn-red btn-lg sweep'}" data-act="new">קריירה חדשה</button>
+    </div>
+    <p class="fine">משחקים במקלדת או במסך מגע · ההתקדמות נשמרת בדפדפן</p>
+  </section>`;
+  const a = S ? playerLook() : DEFAULT_LOOK, b = OPPONENTS[OPPONENTS.length - 1].look;
+  addAnim(app.querySelector('.title-duo'), (ctx, w, h, t) => {
+    const c1 = t % 2.4, c2 = (t + 1.2) % 2.4;
+    const pA = { bob: Math.abs(Math.sin(t * 4.4)) * 3.4, sway: t * 2.2 }, pB = { bob: Math.abs(Math.sin(t * 4.4 + 1.5)) * 3.4, sway: t * 2.2 + 2 };
+    if (c1 < 0.32) { pA.lead = Math.sin(c1 / 0.32 * Math.PI); pB.block = pA.lead; }
+    if (c2 < 0.42) { pB.rear = Math.sin(c2 / 0.42 * Math.PI); pA.duck = pB.rear * 0.8; pA.leanX = -12 * pB.rear; }
+    const k = Math.max(w / 960, h / 440);
+    ctx.save(); ctx.translate((w - 960 * k) / 2, (h - 440 * k) / 2); ctx.scale(k, k);
+    drawArenaScene(ctx, 960, 440, t, 0.45, [], 398);
+    drawFighter(ctx, a, 480 - 72, 398, 1, pA, 1.18);
+    drawFighter(ctx, b, 480 + 72, 398, -1, pB, 1.18);
+    drawArenaFront(ctx, 960, 440, t);
+    ctx.restore();
+  });
+}
+
+// ---------- יצירת לוחם ----------
+function swatchGroup(key, label, colors) {
+  return `<div class="field"><span class="flabel">${label}</span>
+    <div class="swatches" role="radiogroup" aria-label="${label}" data-group="${key}">
+      ${colors.map(c => `<button type="button" class="swatch${draft.look[key] === c ? ' on' : ''}" style="--c:${c}" data-act="pick" data-k="${key}" data-v="${c}" role="radio" aria-checked="${draft.look[key] === c}" aria-label="${label} ${c}"></button>`).join('')}
+    </div></div>`;
+}
+function chipGroup(key, label, items) {
+  return `<div class="field"><span class="flabel">${label}</span>
+    <div class="chips" role="radiogroup" aria-label="${label}" data-group="${key}">
+      ${items.map(i => `<button type="button" class="chip${draft.look[key] === i.id ? ' on' : ''}" data-act="pick" data-k="${key}" data-v="${i.id}" role="radio" aria-checked="${draft.look[key] === i.id}">${i.name}</button>`).join('')}
+    </div></div>`;
+}
+function renderCreate(edit) {
+  draft = edit ? { edit: true, name: S.name, nick: S.nick, look: { ...S.look } } : { edit: false, name: '', nick: '', look: { ...DEFAULT_LOOK } };
+  app.innerHTML = `
+  <section class="screen create">
+    <header class="topbar">
+      <button class="btn btn-icon" data-act="${edit ? 'hub' : 'title'}" aria-label="חזרה">→</button>
+      <h2>${edit ? 'עריכת הלוחם' : 'יצירת לוחם'}</h2>
+    </header>
+    <div class="create-grid">
+      <div class="preview-card card">
+        <canvas class="preview-lg" aria-label="תצוגה מקדימה של הלוחם"></canvas>
+        <div class="pv-name" id="pvName"></div>
+        <button class="btn btn-ghost btn-sm" data-act="randomize">מראה אקראי</button>
+      </div>
+      <div class="options card">
+        <div class="field-row">
+          <div class="field"><label class="flabel" for="fName">שם הלוחם</label><input id="fName" maxlength="16" placeholder="למשל: דני כהן" autocomplete="off"></div>
+          <div class="field"><label class="flabel" for="fNick">כינוי <span class="opt">(לא חובה)</span></label><input id="fNick" maxlength="14" placeholder="למשל: הפטיש" autocomplete="off"></div>
+        </div>
+        ${swatchGroup('skin', 'צבע עור', LOOK_OPTIONS.skin)}
+        ${chipGroup('hairStyle', 'תספורת', LOOK_OPTIONS.hairStyle)}
+        ${swatchGroup('hairColor', 'צבע שיער', LOOK_OPTIONS.hairColor)}
+        ${chipGroup('beard', 'זקן', LOOK_OPTIONS.beard)}
+        ${swatchGroup('shorts', 'מכנסיים', LOOK_OPTIONS.cloth)}
+        ${swatchGroup('gloves', 'כפפות', LOOK_OPTIONS.cloth)}
+        ${swatchGroup('shoes', 'נעליים', LOOK_OPTIONS.cloth)}
+        <p class="form-err" id="formErr" hidden></p>
+        <button class="btn btn-red btn-lg sweep" data-act="${edit ? 'saveLook' : 'startCareer'}">${edit ? 'שמור שינויים' : 'התחל קריירה'}</button>
+      </div>
+    </div>
+  </section>`;
+  const fn = document.getElementById('fName'), fk = document.getElementById('fNick');
+  fn.value = draft.name; fk.value = draft.nick;
+  const upd = () => {
+    draft.name = fn.value.trim(); draft.nick = fk.value.trim();
+    document.getElementById('pvName').innerHTML = (draft.name ? esc(draft.name) : '<span class="muted">הלוחם שלך</span>') + (draft.nick ? ` <span class="nick">"${esc(draft.nick)}"</span>` : '');
+  };
+  fn.addEventListener('input', upd); fk.addEventListener('input', upd); upd();
+  fighterPreview(app.querySelector('.preview-lg'), () => edit ? { ...draft.look, outfit: S.outfit.equip } : draft.look, 1, { jab: true, glow: 'rgba(217,54,62,.22)' });
+}
+function refreshGroup(k) {
+  app.querySelectorAll(`[data-group="${k}"] [data-act="pick"]`).forEach(b => {
+    const on = b.dataset.v === draft.look[k]; b.classList.toggle('on', on); b.setAttribute('aria-checked', on);
+  });
+}
+
+// ---------- מרכז הקריירה ----------
+function renderHub(tab) {
+  const keepScroll = !tab || tab === hubTab, y = window.scrollY;
+  if (tab) hubTab = tab;
+  if (hubTab !== 'wardrobe') wrTry = null;
+  const eff = effStats();
+  const tabs = [['fights', 'קרבות', 't-red'], ['train', 'אימונים', 't-green'], ['shop', 'חנות', 't-gold'], ['wardrobe', 'מלתחה', 't-purple'], ['profile', 'פרופיל', 't-blue']];
+  app.innerHTML = `
+  <section class="screen hub">
+    <header class="profile-bar card">
+      <canvas class="preview-sm" aria-hidden="true"></canvas>
+      <div class="pb-main">
+        <div class="pb-name">${esc(S.name)}${S.nick ? ` <span class="nick">"${esc(S.nick)}"</span>` : ''}</div>
+        <div class="pb-meta">
+          <span class="rank-pill">${rankName()}</span>
+          <span class="style-pill">סגנון: ${STYLES[S.style].name}</span>
+          <span>מאזן <b class="num">${S.record.w}-${S.record.l}</b></span>
+          <span><b class="num">${S.record.ko}</b> נוקאאוטים</span>
+          <span>שבוע <b class="num">${S.week}</b></span>
+        </div>
+        <div class="energy"><span>אנרגיה</span><div class="bar"><i style="width:${S.energy}%" class="${S.energy < 35 ? 'low' : ''}"></i></div><b class="num">${S.energy}</b></div>
+      </div>
+      <div class="pb-side">
+        <div class="money num">$${fmt(S.money)}</div>
+        <div class="ovr"><b class="num">${ovr(eff)}</b><span>דירוג כללי</span></div>
+        ${S.belts.length ? `<div class="belts">${S.belts.map(b => `<span class="belt" title="${b}"></span>`).join('')}</div>` : ''}
+      </div>
+    </header>
+    <nav class="tabs" role="tablist">
+      ${tabs.map(([id, name, cls]) => `<button role="tab" class="tab ${cls}${hubTab === id ? ' on' : ''}" aria-selected="${hubTab === id}" data-act="tab" data-tab="${id}">${name}</button>`).join('')}
+    </nav>
+    <div class="tab-body">${({ fights: tabFights, train: tabTrain, shop: tabShop, wardrobe: tabWardrobe, profile: tabProfile })[hubTab]()}</div>
+  </section>`;
+  fighterPreview(app.querySelector('.preview-sm'), () => playerLook(), 1, { phase: 1, robe: true });
+  const oc = app.querySelector('.preview-opp');
+  if (oc) { const o = nextOpponent(); fighterPreview(oc, () => o.look, -1, { jab: true, phase: 2, glow: 'rgba(217,54,62,.18)' }); }
+  const wc = app.querySelector('.preview-wr');
+  if (wc) {
+    fighterPreview(wc, () => playerLook(wrTry), 1, { jab: true, robe: true, glow: 'rgba(139,92,246,.25)' });
+    app.querySelectorAll('.wr-item canvas').forEach(c => {
+      const it = WARDROBE_BY_ID[c.dataset.id];
+      drawPortrait(c, playerLook(it.id), it.slot);
+    });
+  }
+  if (keepScroll) window.scrollTo(0, y);
+}
+
+function tabWardrobe() {
+  const own = new Set(S.outfit.owned), eq = S.outfit.equip;
+  const tryItem = wrTry ? WARDROBE_BY_ID[wrTry] : null;
+  const slots = WARDROBE_SLOTS.map(sl => {
+    const items = WARDROBE.filter(w => w.slot === sl.id).map(w => {
+      const owned = own.has(w.id), worn = eq[w.slot] === w.id, afford = S.money >= w.price;
+      const btn = worn ? `<button class="btn btn-sm btn-ghost" data-act="unwear" data-id="${w.id}">הסר</button>`
+        : owned ? `<button class="btn btn-sm btn-purple" data-act="wear" data-id="${w.id}">לבש</button>`
+        : `<button class="btn btn-sm btn-gold" data-act="buyWear" data-id="${w.id}" ${afford ? '' : 'disabled'}><span class="num">$${fmt(w.price)}</span></button>`;
+      return `<article class="wr-item${worn ? ' worn' : ''}${wrTry === w.id ? ' trying' : ''}" data-act="tryOn" data-id="${w.id}">
+        <canvas data-id="${w.id}" aria-hidden="true"></canvas>
+        <div class="wr-name">${w.name}</div>
+        <div class="wr-state">${worn ? 'לבוש עכשיו' : owned ? 'בבעלותך' : afford ? 'לחץ למדידה' : 'חסר כסף'}</div>
+        ${btn}
+      </article>`;
+    }).join('');
+    return `<section class="wr-slot"><h3 class="sec-title">${sl.name}</h3><div class="wr-grid">${items}</div></section>`;
+  }).join('');
+  return `
+  <div class="wardrobe">
+    <aside class="card wr-preview">
+      <canvas class="preview-wr" aria-label="הלוחם שלך עם הלבוש"></canvas>
+      <p class="wr-try">${tryItem ? `מודד עכשיו: <b>${tryItem.name}</b>` : 'לחץ על פריט כדי למדוד אותו לפני שקונים'}</p>
+      ${tryItem ? `<button class="btn btn-sm btn-ghost" data-act="tryOn" data-id="${tryItem.id}">בטל מדידה</button>` : ''}
+      <p class="muted small">הלבוש מופיע גם בזירה. חלוק הכניסה מופיע לפני הקרב.</p>
+    </aside>
+    <div class="wr-list">${slots}</div>
+  </div>`;
+}
+
+function tapeRow(label, a, b) {
+  const M = 75;
+  return `<div class="tape-row">
+    <span class="tv num ${a > b ? 'up' : ''}">${a}</span>
+    <div class="tb you"><i style="width:${Math.min(100, a / M * 100)}%"></i></div>
+    <span class="tl">${label}</span>
+    <div class="tb them"><i style="width:${Math.min(100, b / M * 100)}%"></i></div>
+    <span class="tv num ${b > a ? 'up' : ''}">${b}</span>
+  </div>`;
+}
+
+function tabFights() {
+  const o = nextOpponent(), os = oppStats(o), eff = effStats();
+  const ladder = OPPONENTS.map((x, i) => {
+    const cls = i < S.next ? 'done' : i === S.next ? 'cur' : 'locked';
+    const st = i < S.next ? 'ניצחת' : i === S.next ? 'הבא בתור' : 'נעול';
+    return `<li class="${cls}"><span class="ln num">${i + 1}</span><span class="lname">${x.name} <small>"${x.nick}"</small></span>${x.title ? '<span class="belt sm" title="קרב על חגורה"></span>' : ''}<span class="lstat">${st}</span></li>`;
+  }).join('');
+  return `
+  <div class="fight-grid">
+    <article class="card next-fight${o.title ? ' is-title' : ''}">
+      <div class="nf-head"><span class="eyebrow">${o.title ? 'קרב על ' + o.title : o.defense ? 'הגנה על התואר #' + (S.defenses + 1) : 'הקרב הבא'}</span><span class="tier">${o.tier}</span></div>
+      <div class="nf-body">
+        <canvas class="preview-opp" aria-hidden="true"></canvas>
+        <div class="nf-info">
+          <h3>${o.name}</h3>
+          <div class="nick">"${o.nick}"</div>
+          <span class="style-tag">${STYLES[o.style].name}</span>
+          <p class="muted">${STYLES[o.style].desc}</p>
+          <dl class="facts">
+            <div><dt>סיבובים</dt><dd class="num">${o.rounds}</dd></div>
+            <div><dt>ארנק</dt><dd class="num gold">$${fmt(o.purse)}</dd></div>
+            <div><dt>דירוג</dt><dd class="num">${ovr(os)}</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div class="tape">
+        <div class="tape-head"><span>אתה</span><span>היריב</span></div>
+        ${STAT_DEFS.map(d => tapeRow(d.name, eff[d.id], os[d.id])).join('')}
+      </div>
+      ${S.energy < 35 ? `<p class="warn">האנרגיה שלך ${S.energy}% — תתחיל את הקרב עם פחות סיבולת. כדאי לנוח קודם.</p>` : ''}
+      <button class="btn btn-red btn-lg sweep" data-act="toVs">צא לקרב</button>
+    </article>
+    <article class="card ladder">
+      <h3>סולם הדירוג</h3>
+      <ol>${ladder}</ol>
+      ${S.next >= OPPONENTS.length ? `<p class="champ-note">אתה אלוף העולם. כל קרב מעכשיו הוא הגנה על התואר מול מתמודד חזק יותר. הגנות מוצלחות: <b class="num">${S.defenses}</b></p>` : ''}
+    </article>
+  </div>`;
+}
+
+function tabTrain() {
+  const cards = STAT_DEFS.map(d => {
+    const lvl = S.stats[d.id], bonus = gearBonus(d.id), cost = trainCost(lvl), max = lvl >= STAT_MAX;
+    const can = !max && S.money >= cost && S.energy >= TRAIN_ENERGY;
+    return `<article class="card train-card">
+      <div class="tc-top"><h3>${d.train}</h3><span class="stat-name">${d.name}</span></div>
+      <div class="lvl"><b class="num">${lvl}</b><span class="of num">/ ${STAT_MAX}</span>${bonus ? `<span class="bonus num">+${bonus} ציוד</span>` : ''}</div>
+      <div class="bar stat"><i style="width:${lvl / STAT_MAX * 100}%"></i></div>
+      <p class="muted">${d.desc}</p>
+      <button class="btn btn-green" data-act="train" data-id="${d.id}" ${can ? '' : 'disabled'}>
+        ${max ? 'הגעת למקסימום' : `התאמן<small class="num">$${cost} · ${TRAIN_ENERGY} אנרגיה</small>`}
+      </button>
+    </article>`;
+  }).join('');
+  return `
+  <div class="train-grid">${cards}
+    <article class="card rest-card">
+      <h3>מחוץ לחדר הכושר</h3>
+      <p class="muted">אימון עולה אנרגיה. מנוחה ממלאת אותה ומעבירה שבוע. אזל הכסף? משמרת במכון תמיד משלמת.</p>
+      <div class="rest-actions">
+        <button class="btn btn-blue" data-act="rest">נוח עד השבוע הבא<small>אנרגיה מלאה</small></button>
+        <button class="btn btn-ghost" data-act="work" ${S.energy >= 30 ? '' : 'disabled'}>משמרת במכון<small class="num">+$${workPay()} · 30 אנרגיה</small></button>
+      </div>
+    </article>
+  </div>
+  ${stylesSection()}`;
+}
+
+function stylesSection() {
+  const cards = Object.entries(STYLES).map(([id, st]) => {
+    const owned = S.styles.includes(id), active = S.style === id, afford = S.money >= st.price;
+    const btn = active ? '<span class="st-active">הסגנון שלך</span>'
+      : owned ? `<button class="btn btn-sm btn-purple" data-act="setStyle" data-id="${id}">עבור לסגנון</button>`
+      : `<button class="btn btn-sm btn-gold" data-act="learnStyle" data-id="${id}" ${afford ? '' : 'disabled'}>למד · <span class="num">$${fmt(st.price)}</span></button>`;
+    return `<article class="card style-card${active ? ' active' : ''}">
+      <div class="sc-top"><h3>${st.name}</h3>${owned && !active ? '<span class="eyebrow">נלמד</span>' : ''}</div>
+      <p class="perk">${st.perkDesc}</p>
+      ${btn}
+    </article>`;
+  }).join('');
+  return `<h3 class="sec-title styles-title">סגנון לחימה</h3>
+  <p class="muted sec-sub">כל סגנון נותן יתרון ומחיר. לומדים פעם אחת, ואחר כך מחליפים בחינם.</p>
+  <div class="styles-grid">${cards}</div>`;
+}
+
+function tabShop() {
+  const gear = GEAR.map(g => {
+    const tier = S.gear[g.id], stat = STAT_DEFS.find(d => d.id === g.stat).name, maxed = tier >= 3;
+    const price = maxed ? 0 : GEAR_PRICE[tier + 1];
+    return `<article class="card shop-card">
+      <div class="sc-top"><span class="eyebrow">${g.name} · ${stat}</span><div class="pips">${[1, 2, 3].map(i => `<i class="${i <= tier ? 'on' : ''}"></i>`).join('')}</div></div>
+      <div class="sc-now">עכשיו: <b>${g.tiers[tier]}</b>${GEAR_BONUS[tier] ? ` <span class="bonus num">+${GEAR_BONUS[tier]} ${stat}</span>` : ''}</div>
+      ${maxed ? '<p class="maxed">הציוד הכי טוב שיש</p>' : `
+      <div class="sc-next"><span>שדרוג: <b>${g.tiers[tier + 1]}</b></span><span class="bonus num">+${GEAR_BONUS[tier + 1]} ${stat}</span></div>
+      <button class="btn btn-gold" data-act="buyGear" data-id="${g.id}" ${S.money >= price ? '' : 'disabled'}>${S.money >= price ? `קנה · <span class="num">$${fmt(price)}</span>` : `חסרים <span class="num">$${fmt(price - S.money)}</span>`}</button>`}
+    </article>`;
+  }).join('');
+  const extras = EXTRAS.map(x => {
+    const owned = x.once && S[x.id];
+    return `<article class="card shop-card extra">
+      <div class="sc-top"><span class="eyebrow">${x.once ? 'שדרוג קבוע' : 'מתכלה'}</span></div>
+      <h3>${x.name}</h3><p class="muted">${x.desc}</p>
+      ${owned ? '<p class="maxed">כבר בצוות שלך</p>' : `<button class="btn btn-gold" data-act="buyExtra" data-id="${x.id}" ${S.money >= x.price ? '' : 'disabled'}>קנה · <span class="num">$${fmt(x.price)}</span></button>`}
+    </article>`;
+  }).join('');
+  return `<h3 class="sec-title">ציוד</h3><div class="shop-grid">${gear}</div><h3 class="sec-title">שירותים</h3><div class="shop-grid">${extras}</div>`;
+}
+
+function tabProfile() {
+  const eff = effStats();
+  const hist = S.history.length ? S.history.slice(0, 10).map(h => `
+    <li class="${h.won ? 'w' : 'l'}"><span class="res">${h.won ? 'נ' : 'ה'}</span><span class="hn">${h.opp}</span><span class="hm">${h.method}${h.round ? ' · סיבוב ' + h.round : ''}</span><span class="num hp">+$${fmt(h.earned)}</span></li>`).join('')
+    : '<li class="empty">עוד לא נלחמת. הקרב הראשון מחכה בלשונית קרבות.</li>';
+  return `
+  <div class="profile-grid">
+    <article class="card">
+      <h3>סטטיסטיקות</h3>
+      <div class="stat-list">${STAT_DEFS.map(d => `<div class="sl-row"><span>${d.name}</span><div class="bar stat"><i style="width:${eff[d.id] / (STAT_MAX + 10) * 100}%"></i></div><b class="num">${eff[d.id]}</b></div>`).join('')}</div>
+      <h3>חגורות</h3>
+      ${S.belts.length ? `<ul class="belt-list">${S.belts.map(b => `<li><span class="belt"></span>${b}</li>`).join('')}</ul>` : `<p class="muted">עוד אין. הראשונה מחכה בקרב מספר ${OPPONENTS.findIndex(o => o.title) + 1} בסולם.</p>`}
+    </article>
+    <article class="card">
+      <h3>היסטוריית קרבות</h3>
+      <ul class="history">${hist}</ul>
+    </article>
+    <article class="card settings">
+      <h3>הגדרות</h3>
+      <div class="set-actions">
+        <button class="btn btn-blue" data-act="editLook">ערוך מראה ושם</button>
+        <button class="btn btn-ghost" data-act="sound">צלילים: ${Sfx.on ? 'פועלים' : 'כבויים'}</button>
+        <button class="btn btn-ghost" data-act="title">למסך הפתיחה</button>
+        <button class="btn btn-danger" data-act="reset">מחק קריירה</button>
+      </div>
+    </article>
+  </div>`;
+}
+
+// ---------- לפני הקרב ----------
+function renderVs() {
+  const o = nextOpponent();
+  app.innerHTML = `
+  <section class="screen vs-screen">
+    <div class="vs-stage" dir="ltr">
+      <div class="vs-side you" dir="rtl"><canvas id="vsYou" aria-hidden="true"></canvas><h3>${esc(S.name)}</h3><span><span class="num">${S.record.w}-${S.record.l}</span> · ${STYLES[S.style].name}</span></div>
+      <div class="vs-mid"><span class="vs">VS</span><small dir="rtl">${o.rounds} סיבובים של דקה</small></div>
+      <div class="vs-side them" dir="rtl"><canvas id="vsThem" aria-hidden="true"></canvas><h3>${o.name}</h3><span>"${o.nick}" · ${STYLES[o.style].name}</span></div>
+    </div>
+    ${o.title ? `<p class="title-bout"><span class="belt"></span> על הכף: ${o.title}</p>` : ''}
+    <div class="card how">
+      <h3>שליטה</h3>
+      <div class="keys">
+        <div><kbd>A</kbd><kbd>D</kbd> / <kbd>←</kbd><kbd>→</kbd><span>תזוזה</span></div>
+        <div><kbd>J</kbd><span>ג׳אב — מהיר וזול</span></div>
+        <div><kbd>K</kbd><span>קרוס — חזק</span></div>
+        <div><kbd>L</kbd><span>אפרקאט — פורץ שמירה, טווח קצר</span></div>
+        <div><kbd>S</kbd> / <kbd>↓</kbd><span>החזק לחסימה</span></div>
+        <div><kbd>רווח</kbd><span>התחמקות</span></div>
+      </div>
+      <p class="muted tip">טיפ: כל אגרוף עולה סיבולת (הפס הכחול). פגיעה ביריב באמצע אגרוף שלו היא קאונטר — נזק כפול כמעט.</p>
+    </div>
+    <div class="vs-actions">
+      <button class="btn btn-ghost" data-act="hub">חזרה</button>
+      <button class="btn btn-red btn-lg sweep" data-act="fight">עלה לזירה</button>
+    </div>
+  </section>`;
+  fighterPreview(document.getElementById('vsYou'), () => playerLook(), 1, { jab: true, robe: true, glow: 'rgba(63,127,240,.25)' });
+  fighterPreview(document.getElementById('vsThem'), () => o.look, -1, { jab: true, robe: true, phase: 1.7, glow: 'rgba(217,54,62,.25)' });
+}
+
+// ---------- הקרב ----------
+function renderFight() {
+  const o = nextOpponent();
+  app.innerHTML = `
+  <section class="screen fight-screen">
+    <div class="hud" dir="ltr">
+      <div class="plate">
+        <div class="pl-name" dir="rtl">${esc(S.name)} <span class="kds" id="kdP"></span></div>
+        <div class="hbar hp"><i class="lag" id="lagP"></i><i class="cur" id="hpP"></i></div>
+        <div class="hbar sta"><i id="staP"></i></div>
+      </div>
+      <div class="clock"><div id="rnd">סיבוב 1/${o.rounds}</div><div id="tm" class="num">1:00</div></div>
+      <div class="plate right">
+        <div class="pl-name" dir="rtl">${o.name} <span class="kds" id="kdO"></span></div>
+        <div class="hbar hp"><i class="lag" id="lagO"></i><i class="cur" id="hpO"></i></div>
+        <div class="hbar sta"><i id="staO"></i></div>
+      </div>
+    </div>
+    <div class="ring-wrap">
+      <canvas id="ring" aria-label="זירת האגרוף"></canvas>
+      <button class="pause-btn" data-act="pause" aria-label="השהה">❚❚</button>
+      <div class="pause-ov" id="pauseOv" hidden>
+        <div class="card">
+          <h3>הקרב מושהה</h3>
+          <button class="btn btn-green" data-act="resume">המשך להילחם</button>
+          <button class="btn btn-ghost" data-act="forfeit">זרוק את המגבת</button>
+        </div>
+      </div>
+    </div>
+    <div class="touch" dir="ltr">
+      <div class="pad pad-move">
+        <button tabindex="-1" data-hold="left" aria-label="שמאלה">◀</button>
+        <button tabindex="-1" data-hold="right" aria-label="ימינה">▶</button>
+      </div>
+      <div class="pad pad-act">
+        <button tabindex="-1" class="k-def k-blk" data-hold="block">חסימה</button>
+        <button tabindex="-1" class="k-def k-dod" data-cmd="dodge">התחמק</button>
+        <button tabindex="-1" class="k-hit k-upp" data-cmd="upper">אפרקאט</button>
+        <button tabindex="-1" class="k-hit k-jab" data-cmd="jab">ג׳אב</button>
+        <button tabindex="-1" class="k-hit k-crs" data-cmd="cross">קרוס</button>
+      </div>
+    </div>
+    <p class="rotate-hint">טיפ: סובב את הטלפון לרוחב — הזירה תתפוס את כל המסך</p>
+    <p class="legend">A/D תזוזה · J ג׳אב · K קרוס · L אפרקאט · S חסימה · רווח התחמקות · Esc השהיה</p>
+  </section>`;
+  const $ = id => document.getElementById(id);
+  const eff = effStats();
+  currentFight = new Fight({
+    canvas: $('ring'), rounds: o.rounds,
+    hud: {
+      p: { hp: $('hpP'), lag: $('lagP'), sta: $('staP'), kd: $('kdP') },
+      o: { hp: $('hpO'), lag: $('lagO'), sta: $('staO'), kd: $('kdO') },
+      time: $('tm'), round: $('rnd')
+    },
+    player: { name: S.name, style: S.style, look: playerLook(), stats: eff, staStart: 0.55 + 0.45 * S.energy / 100 },
+    opp: { name: o.name, look: o.look, stats: oppStats(o), size: o.style === 'giant' ? 1.1 : 1 },
+    oppStyle: o.style, skill: clamp(o.level / 50, 0.12, 1),
+    onPause: paused => { $('pauseOv').hidden = !paused; },
+    onEnd: res => { const r = applyResult(res, o); go('result', r); }
+  });
+  const f = currentFight, touch = app.querySelector('.touch');
+  const release = e => { const b = e.target.closest('[data-hold]'); if (b) { f.input[b.dataset.hold] = false; b.classList.remove('pressed'); } };
+  touch.addEventListener('pointerdown', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    e.preventDefault(); Sfx.init();
+    if (b.dataset.hold) { f.input[b.dataset.hold] = true; b.classList.add('pressed'); try { b.setPointerCapture(e.pointerId); } catch (_) { /* */ } }
+    if (b.dataset.cmd) f.cmd(b.dataset.cmd);
+  });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => touch.addEventListener(ev, release));
+  touch.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+function applyResult(res, o) {
+  let earned = 0, bonus = 0;
+  const methodName = { KO: 'נוקאאוט', TKO: 'TKO', DEC: 'החלטת שופטים', RET: 'כניעה' }[res.method];
+  if (res.won) {
+    earned = o.purse;
+    if (res.method !== 'DEC') bonus = Math.round(o.purse * 0.3);
+    S.record.w++; if (res.method !== 'DEC') S.record.ko++;
+    if (o.defense) S.defenses++; else S.next++;
+    if (o.title && !S.belts.includes(o.title)) S.belts.push(o.title);
+  } else {
+    earned = res.method === 'RET' ? 0 : Math.round(o.purse * 0.35);
+    S.record.l++;
+  }
+  S.money += earned + bonus;
+  S.energy = Math.max(0, S.energy - 45); S.week++;
+  S.history.unshift({ opp: o.name, won: res.won, method: methodName, round: res.method === 'DEC' ? 0 : res.round, earned: earned + bonus });
+  S.history = S.history.slice(0, 30);
+  save();
+  return { ...res, o, earned, bonus, methodName, newBelt: res.won && o.title ? o.title : null };
+}
+
+// ---------- תוצאה ----------
+function renderResult(r) {
+  const acc = r.thrown ? Math.round(r.landed / r.thrown * 100) : 0;
+  app.innerHTML = `
+  <section class="screen result ${r.won ? 'won' : 'lost'}">
+    ${r.won ? '<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>' : ''}
+    <canvas class="result-fighter" aria-hidden="true"></canvas>
+    <h1 class="result-title">${r.won ? 'ניצחון!' : 'הפסד'}</h1>
+    <p class="result-sub">${r.methodName}${r.method !== 'DEC' ? ` בסיבוב ${r.round}` : ''} מול ${r.o.name}${r.cards ? ` · <span class="num" dir="ltr">${r.cards.join(', ')}</span>` : ''}</p>
+    ${r.newBelt ? `<p class="title-bout big"><span class="belt"></span> זכית ב${r.newBelt}!</p>` : ''}
+    <div class="card result-card">
+      <div class="rc-row"><span>${r.won ? 'ארנק הקרב' : 'דמי השתתפות'}</span><b class="num gold">+$${fmt(r.earned)}</b></div>
+      ${r.bonus ? `<div class="rc-row"><span>בונוס נוקאאוט</span><b class="num gold">+$${fmt(r.bonus)}</b></div>` : ''}
+      <div class="rc-row"><span>אגרופים שפגעו</span><b class="num">${r.landed}/${r.thrown} (${acc}%)</b></div>
+      <div class="rc-row"><span>נוקדאונים</span><b class="num">${r.kdFor} : ${r.kdAgainst}</b></div>
+      <div class="rc-row"><span>מאזן חדש</span><b class="num">${S.record.w}-${S.record.l}</b></div>
+      <div class="rc-row"><span>אנרגיה</span><b class="num">${S.energy}%</b></div>
+    </div>
+    ${!r.won ? '<p class="muted center">כל הפסד הוא שיעור. תתאמן, תשדרג ציוד ותחזור לזירה — אותו יריב מחכה לך.</p>' : ''}
+    <button class="btn ${r.won ? 'btn-green' : 'btn-blue'} btn-lg sweep" data-act="hub">חזרה לחדר הכושר</button>
+  </section>`;
+  if (r.won) Sfx.cash();
+  fighterPreview(app.querySelector('.result-fighter'), () => playerLook(), 1, r.won ? { win: true, glow: 'rgba(244,183,63,.3)' } : { glow: 'rgba(63,127,240,.18)' });
+}
+
+// ---------- פעולות ----------
+const ACTIONS = {
+  new() {
+    if (S && !confirm('להתחיל קריירה חדשה? הקריירה הנוכחית תימחק.')) return;
+    go('create', false);
+  },
+  continue() { go('hub'); },
+  title() { go('title'); },
+  hub() { go('hub'); },
+  tab(b) { renderHub(b.dataset.tab); },
+  pick(b) { draft.look[b.dataset.k] = b.dataset.v; refreshGroup(b.dataset.k); Sfx.click(); },
+  randomize() {
+    const r = a => a[(Math.random() * a.length) | 0];
+    draft.look = { skin: r(LOOK_OPTIONS.skin), hairStyle: r(LOOK_OPTIONS.hairStyle).id, hairColor: r(LOOK_OPTIONS.hairColor), beard: r(LOOK_OPTIONS.beard).id, shorts: r(LOOK_OPTIONS.cloth), gloves: r(LOOK_OPTIONS.cloth), shoes: r(LOOK_OPTIONS.cloth) };
+    Object.keys(draft.look).forEach(refreshGroup);
+  },
+  startCareer() {
+    if (!draft.name) { showErr('תן ללוחם שם לפני שמתחילים.'); return; }
+    S = newCareer(draft.name, draft.nick, draft.look); save(); hubTab = 'fights'; go('hub');
+    toast('הקריירה התחילה! היריב הראשון כבר מחכה.');
+  },
+  saveLook() {
+    if (!draft.name) { showErr('ללוחם חייב להיות שם.'); return; }
+    S.name = draft.name; S.nick = draft.nick; S.look = draft.look; save(); go('hub'); toast('השינויים נשמרו');
+  },
+  train(b) {
+    const id = b.dataset.id, lvl = S.stats[id], cost = trainCost(lvl);
+    if (S.money < cost || S.energy < TRAIN_ENERGY || lvl >= STAT_MAX) return;
+    S.money -= cost; S.energy -= TRAIN_ENERGY;
+    let gain = 1;
+    if (S.coach && Math.random() < 0.5) gain++;
+    if (Math.random() < 0.12) gain++;
+    S.stats[id] = Math.min(STAT_MAX, lvl + gain);
+    save(); renderHub();
+    const name = STAT_DEFS.find(d => d.id === id).name;
+    toast(gain > 1 ? `אימון מעולה! ${name} +${gain}` : `${name} +1`, 'good');
+  },
+  rest() { S.energy = 100; S.week++; save(); renderHub(); toast(`שבוע ${S.week} — אתה רענן לגמרי`); },
+  work() {
+    if (S.energy < 30) return;
+    const pay = workPay(); S.money += pay; S.energy -= 30; save(); renderHub(); Sfx.cash(); toast(`הרווחת $${pay}`, 'gold');
+  },
+  buyGear(b) {
+    const g = GEAR.find(x => x.id === b.dataset.id), tier = S.gear[g.id];
+    if (tier >= 3 || S.money < GEAR_PRICE[tier + 1]) return;
+    S.money -= GEAR_PRICE[tier + 1]; S.gear[g.id]++; save(); renderHub(); Sfx.cash();
+    toast(`קנית ${g.tiers[tier + 1]}`, 'gold');
+  },
+  buyExtra(b) {
+    const x = EXTRAS.find(e => e.id === b.dataset.id);
+    if (S.money < x.price || (x.once && S[x.id])) return;
+    if (x.id === 'drink' && S.energy >= 100) { toast('האנרגיה שלך כבר מלאה'); return; }
+    S.money -= x.price;
+    if (x.id === 'drink') S.energy = Math.min(100, S.energy + 40);
+    if (x.id === 'massage') S.energy = 100;
+    if (x.id === 'coach') S.coach = true;
+    save(); renderHub(); Sfx.cash(); toast(`קנית ${x.name}`, 'gold');
+  },
+  learnStyle(b) {
+    const id = b.dataset.id, st = STYLES[id];
+    if (S.styles.includes(id) || S.money < st.price) return;
+    S.money -= st.price; S.styles.push(id); S.style = id; save(); renderHub(); Sfx.cash();
+    toast(`למדת את סגנון ה${st.name}!`, 'gold');
+  },
+  setStyle(b) {
+    if (!S.styles.includes(b.dataset.id)) return;
+    S.style = b.dataset.id; save(); renderHub(); Sfx.click(); toast(`הסגנון שלך עכשיו: ${STYLES[S.style].name}`);
+  },
+  tryOn(b) { wrTry = wrTry === b.dataset.id ? null : b.dataset.id; Sfx.click(); renderHub(); },
+  buyWear(b) {
+    const w = WARDROBE_BY_ID[b.dataset.id];
+    if (S.money < w.price || S.outfit.owned.includes(w.id)) return;
+    S.money -= w.price; S.outfit.owned.push(w.id); S.outfit.equip[w.slot] = w.id;
+    if (wrTry === w.id) wrTry = null;
+    save(); renderHub(); Sfx.cash(); toast(`קנית ${w.name} — כבר עליך`, 'gold');
+  },
+  wear(b) {
+    const w = WARDROBE_BY_ID[b.dataset.id];
+    if (!S.outfit.owned.includes(w.id)) return;
+    S.outfit.equip[w.slot] = w.id; if (wrTry === w.id) wrTry = null;
+    save(); renderHub(); Sfx.click();
+  },
+  unwear(b) {
+    const w = WARDROBE_BY_ID[b.dataset.id];
+    delete S.outfit.equip[w.slot]; save(); renderHub(); Sfx.click();
+  },
+  toVs() { go('vs'); },
+  fight() { enterFightMode(); go('fight'); },
+  pause() { if (currentFight) currentFight.cmd('pause'); },
+  resume() { if (currentFight && currentFight.paused) currentFight.togglePause(); },
+  forfeit() { if (currentFight && confirm('לזרוק את המגבת? זה ייחשב הפסד בלי תשלום.')) { currentFight.togglePause(); currentFight.forfeit(); } },
+  editLook() { go('create', true); },
+  sound() { Sfx.on = !Sfx.on; try { localStorage.setItem(SAVE_KEY + '-sound', Sfx.on ? 'on' : 'off'); } catch (e) { /* */ } renderHub(); },
+  reset() {
+    if (!confirm('למחוק את הקריירה לצמיתות? אין דרך לשחזר.')) return;
+    S = null; try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* */ } go('title');
+  }
+};
+function showErr(m) { const e = document.getElementById('formErr'); e.textContent = m; e.hidden = false; document.getElementById('fName').focus(); }
+
+app.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (!b || b.disabled) return;
+  Sfx.init();
+  const fn = ACTIONS[b.dataset.act];
+  if (fn) fn(b);
+});
+
+go(S ? 'title' : 'title');
+
+</script>
