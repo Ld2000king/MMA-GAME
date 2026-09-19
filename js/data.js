@@ -43,7 +43,7 @@ const EXTRAS = [
 
 // ===== סגנונות לחימה =====
 // m = מכפילי סטטיסטיקה ליריבים · ai = התנהגות בזירה · perk = יתרון/חולשה (גם לשחקן, אחרי שלמד את הסגנון)
-const AI_BASE = { aggr: .6, near: [100, 132], far: [140, 178], tempo: 1, react: 0, blockPref: .72, combo: .25, comboLen: 1, upper: .28, jab: .55, retreat: false, punish: 1, dodgeCounter: false };
+const AI_BASE = { aggr: .6, near: [100, 132], far: [140, 178], tempo: 1, react: 0, blockPref: .72, combo: .25, comboLen: 1, upper: .28, jab: .55, retreat: false, punish: 1, dodgeCounter: false, dashIn: 0.5, dashOut: 0.15 };
 const STYLES = {
   balanced:  { name: 'מאוזן', price: 0,
     desc: 'בלי נקודות תורפה בולטות. קרב טכני.', perkDesc: 'בלי יתרונות ובלי חולשות.',
@@ -51,11 +51,11 @@ const STYLES = {
   slugger:   { name: 'מכה כבדה', price: 600,
     desc: 'לוחץ קדימה ומחפש את המכה הגדולה. תזוז ותעניש.', perkDesc: 'נזק +15%, אבל כל אגרוף עולה 10% יותר סיבולת.',
     m: { power: 1.3, speed: .85, stamina: 1, defense: .8, chin: 1.15 },
-    ai: { aggr: .8, tempo: .9, react: -.05, blockPref: .8, combo: .2, upper: .4, jab: .35, punish: .8 }, perk: { dmg: 1.15, sta: 1.1 } },
+    ai: { aggr: .8, tempo: .9, react: -.05, blockPref: .8, combo: .2, upper: .4, jab: .35, punish: .8, dashIn: 1, dashOut: .05 }, perk: { dmg: 1.15, sta: 1.1 } },
   speedster: { name: 'מהיר', price: 600,
     desc: 'נכנס ויוצא עם ג׳אבים. תחסום ותסגור מרחק.', perkDesc: 'אגרופים ותזוזה מהירים יותר, נזק -8%.',
     m: { power: .85, speed: 1.3, stamina: 1.1, defense: 1, chin: .85 },
-    ai: { aggr: .5, tempo: .7, react: .05, blockPref: .5, combo: .35, upper: .15, jab: .7, retreat: true }, perk: { spd: .88, dmg: .92, move: 1.1 } },
+    ai: { aggr: .5, tempo: .7, react: .05, blockPref: .5, combo: .35, upper: .15, jab: .7, retreat: true, dashIn: 1.3, dashOut: .35 }, perk: { spd: .88, dmg: .92, move: 1.1 } },
   tank:      { name: 'טנק', price: 800,
     desc: 'סופג הרבה ומתקדם לאט. תבנה סיבולת לפני הקרב.', perkDesc: 'חיים +15% וחסימה אטומה יותר, אבל תזוזה איטית.',
     m: { power: 1.05, speed: .8, stamina: 1.05, defense: 1.15, chin: 1.35 },
@@ -63,27 +63,27 @@ const STYLES = {
   counter:   { name: 'מתקיף-נגד', price: 900,
     desc: 'מחכה לטעות שלך. אל תזרוק מכות סרק.', perkDesc: 'קאונטר חזק בהרבה (×1.75), התחמקות מתאוששת מהר.',
     m: { power: 1, speed: 1.1, stamina: .95, defense: 1.3, chin: .9 },
-    ai: { aggr: .4, tempo: 1.25, react: .12, blockPref: .55, combo: .2, upper: .3, jab: .5, punish: 1.6, dodgeCounter: true }, perk: { counter: 1.75, dodgeCd: .7 } },
+    ai: { aggr: .4, tempo: 1.25, react: .12, blockPref: .55, combo: .2, upper: .3, jab: .5, punish: 1.6, dodgeCounter: true, dashIn: .4, dashOut: .3 }, perk: { counter: 1.75, dodgeCd: .7 } },
   brawler:   { name: 'מתגושש', price: 900,
     desc: 'זורק סדרות של 3-4 אגרופים ברצף. חסום את הסדרה ותחזיר.', perkDesc: 'כל פגיעה ברצף מוסיפה 12% נזק (עד +36%), אבל השמירה חלשה יותר.',
     m: { power: 1.15, speed: 1, stamina: 1.1, defense: .75, chin: 1.1 },
-    ai: { aggr: .85, tempo: 1.05, react: -.08, blockPref: .85, combo: .55, comboLen: 3, upper: .35, jab: .45, punish: .7 }, perk: { chain: .12, block: 1.3 } },
+    ai: { aggr: .85, tempo: 1.05, react: -.08, blockPref: .85, combo: .55, comboLen: 3, upper: .35, jab: .45, punish: .7, dashIn: 1.3, dashOut: .05 }, perk: { chain: .12, block: 1.3 } },
   outboxer:  { name: 'בוקסר מרחוק', price: 1000,
     desc: 'שומר מרחק ודוקר בג׳אבים. תתקרב אליו והוא בבעיה.', perkDesc: 'טווח ארוך יותר לכל אגרוף, נזק -5%.',
     m: { power: .9, speed: 1.15, stamina: 1.05, defense: 1.15, chin: .85 },
-    ai: { aggr: .3, near: [125, 150], far: [160, 195], tempo: .8, react: .08, blockPref: .6, combo: .2, upper: .1, jab: .8, retreat: true, punish: 1.1 }, perk: { reach: 18, dmg: .95 } },
+    ai: { aggr: .3, near: [125, 150], far: [160, 195], tempo: .8, react: .08, blockPref: .6, combo: .2, upper: .1, jab: .8, retreat: true, punish: 1.1, dashIn: .35, dashOut: .45 }, perk: { reach: 18, dmg: .95 } },
   pressure:  { name: 'לוחץ', price: 1100,
     desc: 'לא נותן לך לנשום ולא נסוג אף פעם. תנצל את זה שהוא תמיד מגיע.', perkDesc: 'אגרופים זולים ב-15% וסיבולת מתמלאת מהר יותר.',
     m: { power: 1.05, speed: .95, stamina: 1.35, defense: .9, chin: 1.05 },
-    ai: { aggr: .95, near: [95, 120], tempo: .75, blockPref: .8, combo: .4, comboLen: 2, upper: .3, jab: .5, punish: .9 }, perk: { sta: .85, regen: 1.25 } },
+    ai: { aggr: .95, near: [95, 120], tempo: .75, blockPref: .8, combo: .4, comboLen: 2, upper: .3, jab: .5, punish: .9, dashIn: 1.6, dashOut: 0 }, perk: { sta: .85, regen: 1.25 } },
   dodger:    { name: 'מתחמק', price: 1200,
     desc: 'כמעט אי אפשר לפגוע בו, ומחזיר מיד אחרי כל התחמקות. תזרוק ג׳אבים מהירים.', perkDesc: 'התחמקות זולה ומהירה, והאגרוף שאחריה חזק ב-30%.',
     m: { power: .9, speed: 1.25, stamina: 1, defense: 1.2, chin: .8 },
-    ai: { aggr: .5, react: .15, blockPref: .25, combo: .3, upper: .25, jab: .55, punish: 1.3, dodgeCounter: true }, perk: { dodgeCd: .55, dodgeSta: .5, dodgeHit: .3 } },
+    ai: { aggr: .5, react: .15, blockPref: .25, combo: .3, upper: .25, jab: .55, punish: 1.3, dodgeCounter: true, dashIn: .8, dashOut: .5 }, perk: { dodgeCd: .55, dodgeSta: .5, dodgeHit: .3 } },
   giant:     { name: 'ענק', price: 1500,
     desc: 'גבוה, כבד ואיטי. מכה אחת שלו שווה שלוש. אל תעמוד מולו.', perkDesc: 'חיים +25% ונזק +10%, אבל אגרופים ותזוזה איטיים.',
     m: { power: 1.25, speed: .75, stamina: .95, defense: 1, chin: 1.3 },
-    ai: { aggr: .7, near: [110, 140], tempo: 1.3, react: -.05, blockPref: .85, combo: .15, upper: .35, jab: .45, punish: .8 }, perk: { hp: 1.25, dmg: 1.1, spd: 1.12, move: .85, reach: 10 } }
+    ai: { aggr: .7, near: [110, 140], tempo: 1.3, react: -.05, blockPref: .85, combo: .15, upper: .35, jab: .45, punish: .8, dashIn: .15, dashOut: 0 }, perk: { hp: 1.25, dmg: 1.1, spd: 1.12, move: .85, reach: 10 } }
 };
 
 const L = (skin, hairStyle, hairColor, beard, shorts, gloves, shoes, outfit = {}) => ({ skin, hairStyle, hairColor, beard, shorts, gloves, shoes, outfit });

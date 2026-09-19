@@ -419,8 +419,10 @@ function renderVs() {
         <div><kbd>L</kbd><span>אפרקאט — פורץ שמירה, טווח קצר</span></div>
         <div><kbd>S</kbd> / <kbd>↓</kbd><span>החזק לחסימה</span></div>
         <div><kbd>רווח</kbd><span>התחמקות</span></div>
+        <div><kbd>→→</kbd> / <kbd>E</kbd><span>דאש לעבר היריב</span></div>
+        <div><kbd>←←</kbd> / <kbd>Q</kbd><span>דאש אחורה (חומק ממכה)</span></div>
       </div>
-      <p class="muted tip">טיפ: כל אגרוף עולה סיבולת (הפס הכחול). פגיעה ביריב באמצע אגרוף שלו היא קאונטר — נזק כפול כמעט.</p>
+      <p class="muted tip">טיפ: כל אגרוף עולה סיבולת (הפס הכחול). פגיעה ביריב באמצע אגרוף שלו הוא קאונטר — נזק כפול כמעט. אגרוף מיד אחרי דאש קדימה הוא ״מכת דאש״: מהיר וחזק יותר — פתיחה מושלמת לקומבו.</p>
     </div>
     <div class="vs-actions">
       <button class="btn btn-ghost" data-act="hub">חזרה</button>
@@ -464,6 +466,7 @@ function renderFight() {
       <div class="pad pad-move">
         <button tabindex="-1" data-hold="left" aria-label="שמאלה">◀</button>
         <button tabindex="-1" data-hold="right" aria-label="ימינה">▶</button>
+        <button tabindex="-1" class="k-dash" data-cmd="dash" aria-label="דאש לעבר היריב">דאש</button>
       </div>
       <div class="pad pad-act">
         <button tabindex="-1" class="k-def k-blk" data-hold="block">חסימה</button>
@@ -474,7 +477,7 @@ function renderFight() {
       </div>
     </div>
     <p class="rotate-hint">טיפ: סובב את הטלפון לרוחב — הזירה תתפוס את כל המסך</p>
-    <p class="legend">A/D תזוזה · J ג׳אב · K קרוס · L אפרקאט · S חסימה · רווח התחמקות · Esc השהיה</p>
+    <p class="legend">A/D תזוזה · J ג׳אב · K קרוס · L אפרקאט · S חסימה · רווח התחמקות · לחיצה כפולה על חץ / Q·E דאש · Esc השהיה</p>
   </section>`;
   const $ = id => document.getElementById(id);
   const eff = effStats();
@@ -496,6 +499,7 @@ function renderFight() {
   touch.addEventListener('pointerdown', e => {
     const b = e.target.closest('button'); if (!b) return;
     e.preventDefault(); Sfx.init();
+    if (b.dataset.hold === 'left' || b.dataset.hold === 'right') f.tapDir(b.dataset.hold === 'right' ? 1 : -1);
     if (b.dataset.hold) { f.input[b.dataset.hold] = true; b.classList.add('pressed'); try { b.setPointerCapture(e.pointerId); } catch (_) { /* */ } }
     if (b.dataset.cmd) f.cmd(b.dataset.cmd);
   });

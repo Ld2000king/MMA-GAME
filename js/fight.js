@@ -6,6 +6,8 @@ const PUNCHES = {
   upper: { name: 'אפרקאט',  dmg: 15, sta: 19, wind: 0.27, rec: 0.33, reach: 125, stun: 0.4,  push: 18 }
 };
 const buzz = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* */ } };
+// דאש: פרץ מהיר של ~גוף אחד. קדימה = מכת דאש (מהירה וחזקה יותר); אחורה = חלון התחמקות קצר
+const DASH_T = 0.18, DASH_SPEED = 640, DASH_CD = 0.55, DASH_STA = 12, DASH_WINDOW = 0.38, DASH_EVADE = 0.15;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const rand = (a, b) => a + Math.random() * (b - a);
 let _actionId = 0;
@@ -25,6 +27,7 @@ class Fighter {
     this.bobT = Math.random() * 6; this.walkT = 0; this.moveAmt = 0;
     this.score = 0; this.thrown = 0; this.landed = 0; this.hpLag = this.maxHp;
     this.aiT = 0; this.atkCd = 1; this.blockT = 0; this.want = 140; this.seen = -1; this.punished = -1;
+    this.dashT = 0; this.dashDir = 0; this.dashCd = 0; this.dashBuff = 0; this.evadeT = 0; this.trail = [];
   }
   get sf() { return clamp(1.22 - this.st.speed / 110, 0.6, 1.2) * this.pk.spd; }
   get moveSp() { return (this.isPlayer ? 140 + this.st.speed * 2.4 : 130 + this.st.speed * 2.2) * this.pk.move; }
@@ -37,7 +40,19 @@ class Fighter {
       wind: P.wind * this.sf * slow, rec: P.rec * this.sf * slow,
       power: tired ? 0.45 : 0.55 + 0.45 * this.sta / this.maxSta
     };
+    if (this.dashBuff > 0 && this.dashDir > 0) {
+      this.action.dash = true; this.action.wind *= 0.7; this.action.rec *= 0.8; this.dashBuff = 0;
+    }
     this.sta = Math.max(0, this.sta - cost); this.thrown++;
+    return true;
+  }
+  // rel: 1 = לעבר היריב, -1 = הרחק ממנו
+  dash(rel) {
+    const cost = DASH_STA * this.pk.sta;
+    if (this.down || this.stun > 0 || this.dodgeT > 0 || this.dashT > 0 || this.dashCd > 0 || this.sta < cost) return false;
+    if (this.action && this.action.t < this.action.wind) return false; // לא באמצע הנפה
+    this.dashT = DASH_T; this.dashDir = rel; this.dashCd = DASH_CD * this.pk.dodgeCd; this.sta -= cost; this.blocking = false;
+    if (rel > 0) this.dashBuff = DASH_T + DASH_WINDOW; else this.evadeT = DASH_EVADE;
     return true;
   }
   dodge() {
@@ -85,12 +100,15 @@ class Fight {
   // ---------- קלט ----------
   onKey(e, down) {
     const c = e.code;
-    if (c === 'ArrowLeft' || c === 'KeyA') this.input.left = down;
-    else if (c === 'ArrowRight' || c === 'KeyD') this.input.right = down;
+    if (c === 'ArrowLeft' || c === 'KeyA' || c === 'ArrowRight' || c === 'KeyD') {
+      const right = c === 'ArrowRight' || c === 'KeyD';
+      this.input[right ? 'right' : 'left'] = down;
+      if (down && !e.repeat) this.tapDir(right ? 1 : -1);
+    }
     else if (c === 'ArrowDown' || c === 'KeyS') this.input.block = down;
-    else if (['KeyJ', 'KeyZ', 'KeyK', 'KeyX', 'KeyL', 'KeyC', 'Space', 'ShiftLeft', 'ShiftRight', 'ArrowUp', 'KeyW', 'Escape', 'KeyP'].includes(c)) {
+    else if (['KeyJ', 'KeyZ', 'KeyK', 'KeyX', 'KeyL', 'KeyC', 'Space', 'ShiftLeft', 'ShiftRight', 'ArrowUp', 'KeyW', 'Escape', 'KeyP', 'KeyE', 'KeyQ'].includes(c)) {
       if (down && !e.repeat) {
-        const map = { KeyJ: 'jab', KeyZ: 'jab', KeyK: 'cross', KeyX: 'cross', KeyL: 'upper', KeyC: 'upper', Space: 'dodge', ShiftLeft: 'dodge', ShiftRight: 'dodge', ArrowUp: 'dodge', KeyW: 'dodge', Escape: 'pause', KeyP: 'pause' };
+        const map = { KeyJ: 'jab', KeyZ: 'jab', KeyK: 'cross', KeyX: 'cross', KeyL: 'upper', KeyC: 'upper', Space: 'dodge', ShiftLeft: 'dodge', ShiftRight: 'dodge', ArrowUp: 'dodge', KeyW: 'dodge', Escape: 'pause', KeyP: 'pause', KeyE: 'dash', KeyQ: 'dashBack' };
         this.cmd(map[c]);
       }
     } else return;
@@ -102,7 +120,25 @@ class Fight {
     if (this.state === 'down' && this.downF === this.p) { this.mash++; Sfx.click(); return; }
     if (this.state !== 'fight') return;
     if (c === 'dodge') { if (this.p.dodge()) Sfx.whoosh(0.8); }
+    else if (c === 'dash' || c === 'dashBack') this.doDash(this.p, c === 'dash' ? 1 : -1);
     else if (PUNCHES[c] && this.p.throw(c)) Sfx.whoosh();
+  }
+  // לחיצה כפולה על כיוון (מקלדת או כפתור מגע) = דאש לאותו כיוון
+  tapDir(screenDir) {
+    const now = performance.now(), last = this.lastTap;
+    this.lastTap = { dir: screenDir, t: now };
+    if (last && last.dir === screenDir && now - last.t < 280) { this.lastTap = null; this.cmd(screenDir * this.p.dir > 0 ? 'dash' : 'dashBack'); }
+  }
+  doDash(f, rel) {
+    if (!f.dash(rel)) return false;
+    Sfx.whoosh(1.3); this.dust(f);
+    return true;
+  }
+  dust(f) {
+    for (let i = 0; i < 9; i++) {
+      const sp = rand(40, 160), back = -f.dir * f.dashDir;
+      this.particles.push({ x: f.x + rand(-20, 20), y: FLOOR - rand(0, 6), vx: back * sp + rand(-30, 30), vy: -rand(40, 140), life: rand(0.3, 0.55), t: 0, c: 'rgba(205,210,222,.55)', r: rand(2, 4.5) });
+    }
   }
   togglePause() {
     this.paused = !this.paused;
@@ -179,6 +215,8 @@ class Fight {
         if (Math.random() < 0.1 + sk * 0.55 + A.react) {
           if (Math.random() < A.blockPref || me.sta < 12) me.blockT = rand(0.3, 0.65);
           else if (me.dodge()) { Sfx.whoosh(0.6); if (A.dodgeCounter) me.counterQ = true; }
+        } else if (Math.random() < A.dashOut * (0.4 + sk * 0.6)) {
+          this.doDash(me, -1); // דאש אחורה מול אגרוף
         }
       }
     }
@@ -188,6 +226,11 @@ class Fight {
       if (Math.random() < (0.15 + sk * 0.5) * A.punish) { me.blockT = 0; me.blocking = false; if (me.throw('cross')) Sfx.whoosh(0.6); }
     }
     // מכה מיד אחרי התחמקות (מתחמק / מתקיף-נגד)
+    // דאש פנימה: סגנונות תוקפניים סוגרים מרחק ופותחים במכת דאש
+    if (me.dashCd <= 0 && me.stun <= 0 && !me.blocking && !me.action && dist > 150 && dist > me.want + 30 &&
+        Math.random() < dt * A.dashIn * (0.6 + sk) * 1.5) {
+      if (this.doDash(me, 1)) me.atkCd = Math.min(me.atkCd, 0.06);
+    }
     if (me.counterQ && me.canAct()) {
       me.counterQ = false; me.blockT = 0; me.blocking = false;
       if (me.throw(dist < 125 ? 'upper' : 'cross')) Sfx.whoosh(0.6);
@@ -232,6 +275,13 @@ class Fight {
 
   step(f, foe, dt) {
     f.stun = Math.max(0, f.stun - dt); f.dodgeCd = Math.max(0, f.dodgeCd - dt);
+    f.dashCd = Math.max(0, f.dashCd - dt); f.dashBuff = Math.max(0, f.dashBuff - dt); f.evadeT = Math.max(0, f.evadeT - dt);
+    if (f.dashT > 0) {
+      const k = f.dashT / DASH_T; // מאט לקראת הסוף
+      f.x += f.dir * f.dashDir * DASH_SPEED * (0.4 + 1.2 * k) * (0.85 + f.st.speed / 250) * dt;
+      f.dashT = Math.max(0, f.dashT - dt);
+      f.trail.unshift(f.x); if (f.trail.length > 6) f.trail.pop();
+    } else if (f.trail.length) f.trail.pop();
     f.chainT = Math.max(0, f.chainT - dt); f.dodgeBuff = Math.max(0, f.dodgeBuff - dt);
     if (f.chainT <= 0) f.chainN = 0;
     if (f.dodgeT > 0) { f.dodgeT -= dt; f.x -= f.dir * 150 * dt; }
@@ -267,6 +317,7 @@ class Fight {
     const dist = Math.abs(a.x - d.x);
     const hx = d.x + d.dir * 8 * d.scale, hy = FLOOR - 214 * d.scale;
     if (dist > P.reach + a.pk.reach || d.down) return;
+    if (d.evadeT > 0) { act.result = 'dodge'; this.say('חמק!', hx, hy - 40, '#9cc3ff', 22); return; }
     if (d.dodgeT > 0) { act.result = 'dodge'; this.say('התחמקות!', hx, hy - 40, '#9cc3ff', 22); return; }
     let dmg = P.dmg * (0.65 + a.st.power / 35) * act.power * a.pk.dmg * (1 - d.st.defense / 220) * rand(0.9, 1.1);
     const heavy = act.type !== 'jab';
@@ -283,6 +334,7 @@ class Fight {
     } else {
       act.result = 'land';
       const counter = d.action && !d.action.hit;
+      if (act.dash) { dmg *= 1.25; this.say('מכת דאש!', hx, hy - 58, '#ffc46b', 24); }
       if (counter) { dmg *= a.pk.counter; this.say('קאונטר!', hx, hy - 44, '#ffd27a', 24); }
       if (a.dodgeBuff > 0 && a.pk.dodgeHit) { dmg *= 1 + a.pk.dodgeHit; a.dodgeBuff = 0; this.say('מכת נגד!', hx, hy - 20, '#c4b1ff', 22); }
       if (a.pk.chain) {
@@ -425,6 +477,7 @@ class Fight {
       else if (a.type === 'cross') { p.rear = e; p.leanX = e * 10; }
       else { p.rear = e; p.upper = 1; p.leanX = e * 6; p.duck = a.t < a.wind ? Math.sin(e * Math.PI) * 0.3 : 0; }
     }
+    if (f.dashT > 0) { const k = f.dashT / DASH_T; p.leanX = (p.leanX || 0) + f.dashDir * 12 * k; p.stride = f.dashDir * 12 * k; p.duck = Math.max(p.duck || 0, 0.25 * k); }
     if (f.dodgeT > 0) { const k = Math.sin((1 - f.dodgeT / DODGE_T) * Math.PI); p.duck = Math.max(p.duck || 0, k * 0.9); p.leanX = -16 * k; }
     return p;
   }
@@ -438,7 +491,14 @@ class Fight {
     if (this.shake > 0) ctx.translate(rand(-1, 1) * this.shake, rand(-1, 1) * this.shake);
     drawArenaScene(ctx, FW, FH, t, this.hype, this.flashes, FLOOR);
     const order = this.o.action && !this.p.action ? [this.p, this.o] : [this.o, this.p];
-    for (const f of order) drawFighter(ctx, f.look, f.x, FLOOR, f.dir, this.poseOf(f), f.scale);
+    for (const f of order) {
+      if (f.trail.length > 2) {
+        const pose = this.poseOf(f);
+        for (const [i, a] of [[2, 0.14], [5, 0.08]]) if (f.trail[i] != null) { ctx.globalAlpha = a; drawFighter(ctx, f.look, f.trail[i], FLOOR, f.dir, pose, f.scale); }
+        ctx.globalAlpha = 1;
+      }
+      drawFighter(ctx, f.look, f.x, FLOOR, f.dir, this.poseOf(f), f.scale);
+    }
     for (const q of this.particles) { ctx.globalAlpha = 1 - q.t / q.life; ctx.fillStyle = q.c; circle(ctx, q.x, q.y, q.r); }
     ctx.globalAlpha = 1;
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
