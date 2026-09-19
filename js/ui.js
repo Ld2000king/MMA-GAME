@@ -85,7 +85,7 @@ function renderTitle() {
       <button class="btn ${S ? 'btn-ghost' : 'btn-red btn-lg sweep'}" data-act="new">קריירה חדשה</button>
     </div>
     <div id="installSlot"></div>
-    <p class="fine">משחקים במקלדת או במסך מגע · ההתקדמות נשמרת במכשיר</p>
+    <p class="fine">משחקים במקלדת או במסך מגע · ההתקדמות נשמרת במכשיר · גרסה 7</p>
   </section>`;
   renderInstall();
 }
@@ -453,12 +453,13 @@ function renderFight() {
     </div>
     <div class="ring-wrap">
       <canvas id="ring" aria-label="זירת האגרוף"></canvas>
-      <button class="pause-btn" data-act="pause" aria-label="השהה">❚❚</button>
+      <button class="pause-btn" data-act="pause" aria-label="השהה"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg></button>
       <div class="pause-ov" id="pauseOv" hidden>
         <div class="card">
           <h3>הקרב מושהה</h3>
-          <button class="btn btn-green" data-act="resume">המשך להילחם</button>
-          <button class="btn btn-ghost" data-act="forfeit">זרוק את המגבת</button>
+          <button class="btn btn-green" id="resumeBtn">המשך להילחם</button>
+          <button class="btn btn-ghost" id="forfeitBtn">זרוק את המגבת</button>
+          <p class="pause-note">או לחץ בכל מקום כדי לחזור לקרב</p>
         </div>
       </div>
     </div>
@@ -491,10 +492,25 @@ function renderFight() {
     player: { name: S.name, style: S.style, look: playerLook(), stats: eff, staStart: 0.55 + 0.45 * S.energy / 100 },
     opp: { name: o.name, look: o.look, stats: oppStats(o), size: o.style === 'giant' ? 1.1 : 1 },
     oppStyle: o.style, skill: clamp(o.level / 50, 0.12, 1),
-    onPause: paused => { $('pauseOv').hidden = !paused; },
+    onPause: paused => { $('pauseOv').hidden = !paused; resetForfeit(); },
     onEnd: res => { const r = applyResult(res, o); go('result', r); }
   });
   const f = currentFight, touch = app.querySelector('.touch');
+  // מסך ההשהיה: מגיב כבר בנגיעה (pointerup) ולא רק ב-click, ולחיצה על הרקע הכהה ממשיכה את הקרב
+  const ov = $('pauseOv'), fb = $('forfeitBtn');
+  let forfeitArmed = false;
+  function resetForfeit() { forfeitArmed = false; fb.textContent = 'זרוק את המגבת'; fb.classList.remove('btn-danger'); fb.classList.add('btn-ghost'); }
+  const resume = e => { e.preventDefault(); e.stopPropagation(); f.setPaused(false); };
+  $('resumeBtn').addEventListener('pointerup', resume);
+  $('resumeBtn').addEventListener('click', resume);
+  ov.addEventListener('pointerup', e => { if (e.target === ov) resume(e); });
+  const forfeit = e => {
+    e.preventDefault(); e.stopPropagation();
+    if (!forfeitArmed) { forfeitArmed = true; fb.textContent = 'בטוח? לחץ שוב — הפסד בלי תשלום'; fb.classList.remove('btn-ghost'); fb.classList.add('btn-danger'); return; }
+    f.setPaused(false); f.forfeit();
+  };
+  fb.addEventListener('pointerup', forfeit);
+  fb.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); });
   const release = e => { const b = e.target.closest('[data-hold]'); if (b) { f.input[b.dataset.hold] = false; b.classList.remove('pressed'); } };
   touch.addEventListener('pointerdown', e => {
     const b = e.target.closest('button'); if (!b) return;
@@ -643,8 +659,7 @@ const ACTIONS = {
   toVs() { go('vs'); },
   fight() { enterFightMode(); go('fight'); },
   pause() { if (currentFight) currentFight.cmd('pause'); },
-  resume() { if (currentFight && currentFight.paused) currentFight.togglePause(); },
-  forfeit() { if (currentFight && confirm('לזרוק את המגבת? זה ייחשב הפסד בלי תשלום.')) { currentFight.togglePause(); currentFight.forfeit(); } },
+  resume() { if (currentFight) currentFight.setPaused(false); },
   editLook() { go('create', true); },
   sound() { Sfx.on = !Sfx.on; try { localStorage.setItem(SAVE_KEY + '-sound', Sfx.on ? 'on' : 'off'); } catch (e) { /* */ } renderHub(); },
   reset() {

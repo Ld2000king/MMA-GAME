@@ -77,11 +77,17 @@ class Fight {
     this.paused = false; this.ended = false; this.mash = 0; this.mashNeed = 0; this.count = 0;
     this.slowmo = 0; this.elapsed = 0;
     this.kd = e => this.onKey(e, true); this.ku = e => this.onKey(e, false);
-    this.vis = () => { if (document.hidden && !this.paused && this.state !== 'over') this.togglePause(); };
+    // השהיה אוטומטית רק כשבאמת יוצאים מהאפליקציה — לא בזמן מעבר למסך מלא / סיבוב מסך
+    this.quietUntil = performance.now() + 2000;
+    this.vis = () => {
+      if (!document.hidden || this.paused || this.state === 'over') return;
+      if (performance.now() < this.quietUntil) return;
+      this.togglePause();
+    };
     window.addEventListener('keydown', this.kd); window.addEventListener('keyup', this.ku);
     document.addEventListener('visibilitychange', this.vis);
     // מודדים את הקנבס רק כשהמסך משתנה (סיבוב/מסך מלא), לא בכל פריים
-    this.needSize = true; this.onResize = () => { this.needSize = true; };
+    this.needSize = true; this.onResize = () => { this.needSize = true; this.quietUntil = performance.now() + 1500; };
     window.addEventListener('resize', this.onResize); window.addEventListener('orientationchange', this.onResize);
     document.addEventListener('fullscreenchange', this.onResize);
     this.hudCache = new Map();
@@ -139,6 +145,10 @@ class Fight {
       const sp = rand(40, 160), back = -f.dir * f.dashDir;
       this.particles.push({ x: f.x + rand(-20, 20), y: FLOOR - rand(0, 6), vx: back * sp + rand(-30, 30), vy: -rand(40, 140), life: rand(0.3, 0.55), t: 0, c: 'rgba(205,210,222,.55)', r: rand(2, 4.5) });
     }
+  }
+  setPaused(v) {
+    if (this.paused !== v) this.togglePause();
+    else if (this.onPause) this.onPause(this.paused);
   }
   togglePause() {
     this.paused = !this.paused;
