@@ -67,6 +67,7 @@ function exitFightMode() {
 function go(screen, arg) {
   if (currentFight) { currentFight.destroy(); currentFight = null; }
   if (screen !== 'fight') exitFightMode();
+  if (updatePending && (screen === 'hub' || screen === 'title')) { location.reload(); return; }
   window.scrollTo(0, 0);
   ({ title: renderTitle, create: renderCreate, hub: renderHub, vs: renderVs, fight: renderFight, result: renderResult })[screen](arg);
 }
@@ -100,6 +101,10 @@ function renderInstall() {
       : '';
 }
 document.addEventListener('pwa-change', renderInstall);
+
+// גרסה חדשה הותקנה: טוענים מחדש מיד, או אחרי הקרב אם באמצע קרב (ההתקדמות שמורה ב-localStorage)
+let updatePending = false;
+document.addEventListener('pwa-update', () => { if (currentFight) updatePending = true; else location.reload(); });
 
 // ---------- יצירת לוחם ----------
 function swatchGroup(key, label, colors) {

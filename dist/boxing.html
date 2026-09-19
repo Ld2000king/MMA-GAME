@@ -30,6 +30,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* חובה: אחרת רכיבים עם display משלהם מתעלמים מ-hidden */
 html, body { height: 100%; }
 body {
   margin: 0; color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
@@ -352,7 +353,7 @@ kbd { font-family: var(--font-body); font-weight: 700; font-size: 12px; min-widt
 #ring { display: block; width: 100%; aspect-ratio: 960 / 440; max-width: 100%; touch-action: none; }
 .pause-btn { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(0,0,0,.45); color: #fff; cursor: pointer; font-size: 12px; letter-spacing: -2px; }
 .pause-btn:active { transform: scale(.92); }
-.pause-ov { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5,6,10,.6); backdrop-filter: blur(3px); }
+.pause-ov { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(5,6,10,.78); }
 .pause-ov .card { display: flex; flex-direction: column; gap: 10px; min-width: 240px; text-align: center; }
 .touch { display: flex; justify-content: space-between; gap: 12px; user-select: none; -webkit-user-select: none; touch-action: none; }
 .pad { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -531,6 +532,10 @@ input { font-size: 16px; } /* מונע זום אוטומטי של iOS בעת ה�
   .hub .tab.on.t-blue { color: #6da2ff; }
   body:has(.hub .tabs) #toast { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* פסי החיים/סיבולת בקרב: transform במקום width — בלי חישובי פריסה בכל פריים */
+.hbar i { width: 100%; transform-origin: left center; will-change: transform; }
+.plate.right .hbar i { transform-origin: right center; }
 
 </style>
 <div id="app" dir="rtl" lang="he"></div>
@@ -834,35 +839,37 @@ function star(ctx, x, y, r) {
 }
 
 // ---------- גפיים עם נפח (גרדיאנט גלילי + שריר) ----------
-function cylGrad(ctx, A, B, w, base, light = 0.22, dark = 0.4) {
-  const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1;
-  let nx = -dy / L, ny = dx / L;
-  if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny; }
-  const mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2;
-  const g = ctx.createLinearGradient(mx + nx * w / 2, my + ny * w / 2, mx - nx * w / 2, my - ny * w / 2);
-  g.addColorStop(0, shade(base, light)); g.addColorStop(0.28, base); g.addColorStop(0.75, shade(base, -dark * 0.5)); g.addColorStop(1, shade(base, -dark));
+// מטמון גרדיאנטים: כל גוף מצויר במערכת צירים מקומית, כך שאותו גרדיאנט משמש בכל פריים.
+// (CanvasGradient מתפרש לפי הטרנספורמציה בזמן המילוי — לכן אפשר להזיז אותו עם translate/rotate.)
+const GRAD = new Map();
+function grad(key, make) {
+  let g = GRAD.get(key);
+  if (!g) { if (GRAD.size > 800) GRAD.clear(); g = make(); GRAD.set(key, g); }
   return g;
 }
-function taper(ctx, A, B, wA, wB, base, bulge, light, dark) {
-  const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
-  ctx.fillStyle = cylGrad(ctx, A, B, Math.max(wA, wB) * 1.15, base, light, dark);
-  ctx.beginPath();
-  ctx.moveTo(A[0] + nx * wA / 2, A[1] + ny * wA / 2); ctx.lineTo(B[0] + nx * wB / 2, B[1] + ny * wB / 2);
-  ctx.lineTo(B[0] - nx * wB / 2, B[1] - ny * wB / 2); ctx.lineTo(A[0] - nx * wA / 2, A[1] - ny * wA / 2);
-  ctx.closePath(); ctx.fill();
-  circle(ctx, A[0], A[1], wA / 2); circle(ctx, B[0], B[1], wB / 2);
-  if (bulge) {
-    const [t, wf] = bulge;
-    ell(ctx, lerp(A[0], B[0], t), lerp(A[1], B[1], t), L * 0.34, lerp(wA, wB, t) * wf / 2, Math.atan2(dy, dx));
-  }
+const gctx = document.createElement('canvas').getContext('2d');
+function linG(key, x0, y0, x1, y1, stops) { return grad(key, () => { const g = gctx.createLinearGradient(x0, y0, x1, y1); stops.forEach(([o, c]) => g.addColorStop(o, c)); return g; }); }
+function radG(key, x0, y0, r0, x1, y1, r1, stops) { return grad(key, () => { const g = gctx.createRadialGradient(x0, y0, r0, x1, y1, r1); stops.forEach(([o, c]) => g.addColorStop(o, c)); return g; }); }
+// ממלא את הנתיב הנוכחי כשהגרדיאנט מוזז ל-(tx,ty) — הנתיב עצמו לא זז
+function fillAt(ctx, tx, ty) { ctx.save(); ctx.translate(tx, ty); ctx.fill(); ctx.restore(); }
+
+function taper(ctx, A, B, wA, wB, base, bulge, light = 0.22, dark = 0.4) {
+  const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1, ang = Math.atan2(dy, dx);
+  const W = Math.round(Math.max(wA, wB) * 1.15), f = Math.cos(ang) >= 0 ? 1 : -1; // הצד המואר תמיד למעלה
+  ctx.fillStyle = linG(`t|${base}|${W}|${f}|${light}|${dark}`, 0, -f * W / 2, 0, f * W / 2,
+    [[0, shade(base, light)], [0.28, base], [0.75, shade(base, -dark * 0.5)], [1, shade(base, -dark)]]);
+  ctx.save(); ctx.translate(A[0], A[1]); ctx.rotate(ang);
+  ctx.beginPath(); ctx.moveTo(0, -wA / 2); ctx.lineTo(L, -wB / 2); ctx.lineTo(L, wB / 2); ctx.lineTo(0, wA / 2); ctx.closePath(); ctx.fill();
+  circle(ctx, 0, 0, wA / 2); circle(ctx, L, 0, wB / 2);
+  if (bulge) { const [t, wf] = bulge; ell(ctx, L * t, 0, L * 0.34, lerp(wA, wB, t) * wf / 2); }
+  ctx.restore();
 }
 
 // ---------- נעליים גבוהות ----------
-function shoe(ctx, x, c) {
-  const y = 0;
-  const g = ctx.createLinearGradient(x, y - 36, x + 6, y);
-  g.addColorStop(0, shade(c, 0.22)); g.addColorStop(0.55, c); g.addColorStop(1, shade(c, -0.35));
-  ctx.fillStyle = g;
+function shoe(ctx, sx, c) {
+  ctx.save(); ctx.translate(sx, 0);
+  const x = 0, y = 0;
+  ctx.fillStyle = linG('shoe|' + c, 0, -36, 6, 0, [[0, shade(c, 0.22)], [0.55, c], [1, shade(c, -0.35)]]);
   ctx.beginPath();
   ctx.moveTo(x - 12, y - 36); ctx.lineTo(x + 6, y - 36);
   ctx.quadraticCurveTo(x + 8, y - 19, x + 14, y - 13); ctx.quadraticCurveTo(x + 25, y - 10, x + 24, y - 3);
@@ -874,6 +881,7 @@ function shoe(ctx, x, c) {
   for (let i = 0; i < 5; i++) { const yy = y - 32 + i * 4.6; ctx.beginPath(); ctx.moveTo(x + 1 + i * 1.2, yy); ctx.lineTo(x + 6.5 + i * 1.5, yy + 1.4); ctx.stroke(); }
   ctx.fillStyle = shade(c, -0.4); rr(ctx, x - 12, y - 38, 19, 4, 2); ctx.fill();
   ctx.fillStyle = 'rgba(255,255,255,.18)'; ell(ctx, x + 16, y - 9, 5, 2, -0.3);
+  ctx.restore();
 }
 
 // ---------- מכנסיים ----------
@@ -883,10 +891,8 @@ function shortsPath(ctx, by) {
   ctx.lineTo(1, -93 + by); ctx.lineTo(-3, -80 + by); ctx.lineTo(-34, -80 + by); ctx.closePath();
 }
 function drawShorts(ctx, c, by, pattern) {
-  const g = ctx.createLinearGradient(-35, 0, 36, 0);
-  g.addColorStop(0, shade(c, -0.42)); g.addColorStop(0.3, shade(c, -0.12)); g.addColorStop(0.58, shade(c, 0.28));
-  g.addColorStop(0.7, c); g.addColorStop(1, shade(c, -0.22));
-  ctx.fillStyle = g; shortsPath(ctx, by); ctx.fill();
+  ctx.fillStyle = linG('shorts|' + c, -35, 0, 36, 0, [[0, shade(c, -0.42)], [0.3, shade(c, -0.12)], [0.58, shade(c, 0.28)], [0.7, c], [1, shade(c, -0.22)]]);
+  shortsPath(ctx, by); ctx.fill();
   ctx.save(); shortsPath(ctx, by); ctx.clip();
   const band = lum(c) > 0.72 ? '#1b1d22' : '#f2f2f2';
   if (pattern === 'pt_flames') {
@@ -912,9 +918,8 @@ function drawShorts(ctx, c, by, pattern) {
   ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(-40, -85 + by, 80, 5);
   ctx.restore();
   const wb = pattern === 'pt_gold' ? '#e3b23c' : band;
-  const wg = ctx.createLinearGradient(0, -139 + by, 0, -128 + by);
-  wg.addColorStop(0, shade(wb.length === 7 ? wb : '#f2f2f2', 0.3)); wg.addColorStop(1, shade(wb.length === 7 ? wb : '#f2f2f2', -0.25));
-  ctx.fillStyle = wg; rr(ctx, -27, -139 + by, 54, 11, 3); ctx.fill();
+  ctx.fillStyle = linG('wb|' + wb, 0, -139, 0, -128, [[0, shade(wb, 0.3)], [1, shade(wb, -0.25)]]);
+  rr(ctx, -27, -139 + by, 54, 11, 3); fillAt(ctx, 0, by);
   ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillRect(-26, -134 + by, 52, 1);
   if (!pattern) { ctx.fillStyle = band; ctx.globalAlpha = 0.75; ctx.fillRect(-4, -128 + by, 4, 46); ctx.globalAlpha = 1; }
 }
@@ -933,9 +938,8 @@ function drawTorso(ctx, skin, lx, by, p) {
   const nA = [5 + lx, -188 + by], nB = [5 + lx, -208 + by];
   taper(ctx, nA, nB, 19, 16, shadeHex(skin, -0.08));
   ctx.fillStyle = 'rgba(0,0,0,.28)'; ell(ctx, 10 + lx, -202 + by, 9, 5, 0.2);
-  const g = ctx.createRadialGradient(10 + lx, -178 + by, 4, 2 + lx, -160 + by, 64);
-  g.addColorStop(0, shade(skin, 0.2)); g.addColorStop(0.4, skin); g.addColorStop(0.8, shade(skin, -0.2)); g.addColorStop(1, shade(skin, -0.38));
-  ctx.fillStyle = g; torsoPath(ctx, lx, by); ctx.fill();
+  ctx.fillStyle = radG('torso|' + skin, 10, -178, 4, 2, -160, 64, [[0, shade(skin, 0.2)], [0.4, skin], [0.8, shade(skin, -0.2)], [1, shade(skin, -0.38)]]);
+  torsoPath(ctx, lx, by); fillAt(ctx, lx, by);
   ctx.save(); torsoPath(ctx, lx, by); ctx.clip();
   ctx.fillStyle = 'rgba(0,0,0,.22)'; ell(ctx, -29 + lx * 0.5, -156 + by, 13, 44);
   // הגדרת שרירים
@@ -1090,13 +1094,12 @@ function beard(ctx, look, hx, hy, r) {
 function drawHead(ctx, look, hx, hy, p) {
   const r = 21, skin = look.skin, skinD = shade(skin, -0.24);
   hairBack(ctx, look, hx, hy, r);
-  const g = ctx.createRadialGradient(hx + 9, hy - 9, 2, hx + 2, hy + 2, r * 1.45);
-  g.addColorStop(0, shade(skin, 0.2)); g.addColorStop(0.45, skin); g.addColorStop(0.85, shade(skin, -0.22)); g.addColorStop(1, shade(skin, -0.38));
-  ctx.fillStyle = g;
-  circle(ctx, hx, hy, r);
-  ell(ctx, hx + 9, hy + 11, 13, 11, 0.2);
+  ctx.fillStyle = radG('head|' + skin, 9, -9, 2, 2, 2, r * 1.45, [[0, shade(skin, 0.2)], [0.45, skin], [0.85, shade(skin, -0.22)], [1, shade(skin, -0.38)]]);
+  ctx.beginPath(); ctx.arc(hx, hy, r, 0, Math.PI * 2);
+  ctx.ellipse(hx + 9, hy + 11, 13, 11, 0.2, 0, Math.PI * 2);
   // אף
-  ctx.beginPath(); ctx.moveTo(hx + 18, hy - 7); ctx.quadraticCurveTo(hx + 27, hy + 3, hx + 25, hy + 6); ctx.lineTo(hx + 18, hy + 7); ctx.closePath(); ctx.fill();
+  ctx.moveTo(hx + 18, hy - 7); ctx.quadraticCurveTo(hx + 27, hy + 3, hx + 25, hy + 6); ctx.lineTo(hx + 18, hy + 7); ctx.closePath();
+  fillAt(ctx, hx, hy);
   ctx.fillStyle = 'rgba(0,0,0,.22)'; ell(ctx, hx + 20, hy + 6, 2.2, 1.2);
   // עצמות לחיים וצל לסת
   ctx.fillStyle = 'rgba(255,240,225,.12)'; ell(ctx, hx + 14, hy + 1, 5, 3, 0.3);
@@ -1126,9 +1129,9 @@ function drawHead(ctx, look, hx, hy, p) {
   const d = p.dmg || 0;
   if (d > 0.15) {
     const a = Math.min(1, (d - 0.15) / 0.85);
-    const bg = ctx.createRadialGradient(hx + 13, hy + 3, 0, hx + 13, hy + 3, 9);
-    bg.addColorStop(0, `rgba(135,30,55,${0.45 * a})`); bg.addColorStop(1, 'rgba(135,30,55,0)');
-    ctx.fillStyle = bg; ell(ctx, hx + 13, hy + 3, 9, 7);
+    const aq = Math.round(a * 10) / 10;
+    ctx.fillStyle = radG('bruise|' + aq, 0, 0, 0, 0, 0, 9, [[0, `rgba(135,30,55,${0.45 * aq})`], [1, 'rgba(135,30,55,0)']]);
+    ctx.beginPath(); ctx.ellipse(hx + 13, hy + 3, 9, 7, 0, 0, Math.PI * 2); fillAt(ctx, hx + 13, hy + 3);
     if (a > 0.35) {
       ctx.fillStyle = `rgba(85,30,85,${0.35 * a})`; ell(ctx, hx + 15, hy - 3, 5, 3.6);
       ctx.fillStyle = shade(skin, -0.05); ell(ctx, hx + 15, hy - 6.5, 4.5 * a, 2.4 * a, 0.1);
@@ -1236,14 +1239,12 @@ function drawGlove(ctx, g, e, col) {
   const ang = Math.atan2(g[1] - e[1], g[0] - e[0]);
   ctx.save(); ctx.translate(g[0], g[1]); ctx.rotate(ang);
   // שרוול הכפפה עם פס לבן
-  const cg = ctx.createLinearGradient(0, -10, 0, 10);
-  cg.addColorStop(0, shade(col, 0.2)); cg.addColorStop(0.5, col); cg.addColorStop(1, shade(col, -0.45));
-  ctx.fillStyle = cg; rr(ctx, -25, -9.5, 19, 19, 5); ctx.fill();
+  ctx.fillStyle = linG('cuff|' + col, 0, -10, 0, 10, [[0, shade(col, 0.2)], [0.5, col], [1, shade(col, -0.45)]]);
+  rr(ctx, -25, -9.5, 19, 19, 5); ctx.fill();
   ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(-18, -9.5, 3, 19);
   // אגרוף
-  const mg = ctx.createRadialGradient(5, -7, 1, 0, 0, 19);
-  mg.addColorStop(0, shade(col, 0.42)); mg.addColorStop(0.4, col); mg.addColorStop(1, shade(col, -0.5));
-  ctx.fillStyle = mg; ell(ctx, 1, 0, 16.5, 14.5);
+  ctx.fillStyle = radG('fist|' + col, 5, -7, 1, 0, 0, 19, [[0, shade(col, 0.42)], [0.4, col], [1, shade(col, -0.5)]]);
+  ell(ctx, 1, 0, 16.5, 14.5);
   ctx.fillStyle = shade(col, -0.12); ell(ctx, -3, -11.5, 8, 4.5, -0.2);
   ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 1.2;
   ctx.beginPath(); ctx.arc(1, 0, 10.5, -1.2, 1.25); ctx.stroke();
@@ -1284,9 +1285,9 @@ function drawFighter(ctx, look, x, y, dir, pose, s) {
   ctx.translate(x, y);
   // צל רך על הרצפה
   ctx.save(); ctx.translate(-dir * p.fall * 100 * s, 3 * s); ctx.scale(1, 0.17);
-  const R = (58 + p.fall * 80) * s, sg = ctx.createRadialGradient(0, 0, 0, 0, 0, R);
-  sg.addColorStop(0, 'rgba(0,0,0,.55)'); sg.addColorStop(0.6, 'rgba(0,0,0,.25)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = sg; circle(ctx, 0, 0, R); ctx.restore();
+  const R = Math.round((58 + p.fall * 80) * s);
+  ctx.fillStyle = radG('shadow|' + R, 0, 0, 0, 0, 0, R, [[0, 'rgba(0,0,0,.55)'], [0.6, 'rgba(0,0,0,.25)'], [1, 'rgba(0,0,0,0)']]);
+  circle(ctx, 0, 0, R); ctx.restore();
   ctx.scale(dir * s, s);
   if (p.fall > 0) ctx.rotate(-p.fall * Math.PI / 2 * 0.96);
 
@@ -1326,6 +1327,8 @@ function drawFighter(ctx, look, x, y, dir, pose, s) {
 }
 
 // ===== הזירה =====
+// מכשיר מגע = טלפון/טאבלט: מורידים אפקטים יקרים ורזולוציה כדי לשמור על קצב פריימים
+const LOW_FX = window.matchMedia('(pointer: coarse)').matches;
 // השכבות הסטטיות מצוירות פעם אחת לקנבס נסתר (מטמון), ובכל פריים מציירים רק מה שזז.
 const Scene = { sc: 0, crowd: null, grain: null, mat: null, layers: null };
 const ARENA_W = 960, ARENA_H = 440, ARENA_FLOOR = 398, LED_Y = 262, MAT_TOP = 318;
@@ -1495,6 +1498,7 @@ function drawArenaScene(ctx, W, H, t, hype = 0.3, flashes = []) {
 function drawArenaFront(ctx, W, H) {
   const L = sceneLayers(ctx);
   blit(ctx, L.front);
+  if (LOW_FX) return; // בטלפון מדלגים על הגרעין: מילוי מסך מלא בכל פריים יקר מדי
   ctx.save();
   const ox = (Math.random() * 200) | 0, oy = (Math.random() * 200) | 0;
   ctx.translate(-ox, -oy); ctx.fillStyle = ctx.createPattern(Scene.grain, 'repeat'); ctx.fillRect(ox, oy, W, H);
@@ -1503,8 +1507,8 @@ function drawArenaFront(ctx, W, H) {
 
 // ===== לולאת אנימציה לתצוגות מקדימות =====
 const Anims = new Set();
-function sizeCanvas(c) {
-  const dpr = Math.min(2, window.devicePixelRatio || 1), w = c.clientWidth, h = c.clientHeight;
+function sizeCanvas(c, cap = 2) {
+  const dpr = Math.min(cap, window.devicePixelRatio || 1), w = c.clientWidth, h = c.clientHeight;
   if (!w || !h) return false;
   if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
   return true;
@@ -1615,6 +1619,11 @@ class Fight {
     this.vis = () => { if (document.hidden && !this.paused && this.state !== 'over') this.togglePause(); };
     window.addEventListener('keydown', this.kd); window.addEventListener('keyup', this.ku);
     document.addEventListener('visibilitychange', this.vis);
+    // מודדים את הקנבס רק כשהמסך משתנה (סיבוב/מסך מלא), לא בכל פריים
+    this.needSize = true; this.onResize = () => { this.needSize = true; };
+    window.addEventListener('resize', this.onResize); window.addEventListener('orientationchange', this.onResize);
+    document.addEventListener('fullscreenchange', this.onResize);
+    this.hudCache = new Map();
     if (document.activeElement) document.activeElement.blur();
     this.last = performance.now();
     this.banner('סיבוב 1', '', 1.6);
@@ -1624,6 +1633,8 @@ class Fight {
     cancelAnimationFrame(this.raf);
     window.removeEventListener('keydown', this.kd); window.removeEventListener('keyup', this.ku);
     document.removeEventListener('visibilitychange', this.vis);
+    window.removeEventListener('resize', this.onResize); window.removeEventListener('orientationchange', this.onResize);
+    document.removeEventListener('fullscreenchange', this.onResize);
   }
   // ---------- קלט ----------
   onKey(e, down) {
@@ -1974,7 +1985,7 @@ class Fight {
 
   render() {
     const c = this.canvas;
-    if (!sizeCanvas(c)) return;
+    if (this.needSize) { if (!sizeCanvas(c, LOW_FX ? 1.25 : 2)) return; this.needSize = false; }
     const ctx = this.ctx, k = c.width / FW, t = performance.now() / 1000;
     ctx.setTransform(k, 0, 0, k, 0, 0);
     ctx.save();
@@ -2036,12 +2047,15 @@ class Fight {
   }
 
   updateHud() {
-    const h = this.hud;
+    const h = this.hud, cache = this.hudCache;
+    const bar = (el, v) => {
+      const q = Math.round(Math.max(0, Math.min(1, v)) * 400) / 400;
+      if (cache.get(el) !== q) { cache.set(el, q); el.style.transform = `scaleX(${q})`; }
+    };
     const set = (el, f) => {
-      el.hp.style.width = (f.hp / f.maxHp * 100).toFixed(1) + '%';
-      el.lag.style.width = (f.hpLag / f.maxHp * 100).toFixed(1) + '%';
-      el.sta.style.width = (f.sta / f.maxSta * 100).toFixed(1) + '%';
-      el.sta.classList.toggle('low', f.sta < f.maxSta * 0.25);
+      bar(el.hp, f.hp / f.maxHp); bar(el.lag, f.hpLag / f.maxHp); bar(el.sta, f.sta / f.maxSta);
+      const low = f.sta < f.maxSta * 0.25;
+      if (el.sta._low !== low) { el.sta._low = low; el.sta.classList.toggle('low', low); }
       const kd = '●'.repeat(f.kd);
       if (el.kd.textContent !== kd) el.kd.textContent = kd;
     };
@@ -2124,6 +2138,7 @@ function exitFightMode() {
 function go(screen, arg) {
   if (currentFight) { currentFight.destroy(); currentFight = null; }
   if (screen !== 'fight') exitFightMode();
+  if (updatePending && (screen === 'hub' || screen === 'title')) { location.reload(); return; }
   window.scrollTo(0, 0);
   ({ title: renderTitle, create: renderCreate, hub: renderHub, vs: renderVs, fight: renderFight, result: renderResult })[screen](arg);
 }
@@ -2157,6 +2172,10 @@ function renderInstall() {
       : '';
 }
 document.addEventListener('pwa-change', renderInstall);
+
+// גרסה חדשה הותקנה: טוענים מחדש מיד, או אחרי הקרב אם באמצע קרב (ההתקדמות שמורה ב-localStorage)
+let updatePending = false;
+document.addEventListener('pwa-update', () => { if (currentFight) updatePending = true; else location.reload(); });
 
 // ---------- יצירת לוחם ----------
 function swatchGroup(key, label, colors) {

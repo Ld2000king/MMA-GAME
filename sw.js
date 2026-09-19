@@ -1,7 +1,7 @@
 // Service worker: המשחק עובד גם בלי אינטרנט.
 // אסטרטגיה: מגישים מיד מהמטמון, ובמקביל מרעננים ברקע — כך העדכון מופיע בפתיחה הבאה.
 // הוסף/הסר קובץ ברשימה למטה => העלה את VERSION כדי שהמטמון ייבנה מחדש.
-const VERSION = 'v3';
+const VERSION = 'v5';
 const CACHE = 'mma-' + VERSION;
 const SHELL = [
   './', 'index.html', 'style.css', 'fonts.css', 'manifest.webmanifest',

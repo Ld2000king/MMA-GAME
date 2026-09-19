@@ -65,6 +65,11 @@ class Fight {
     this.vis = () => { if (document.hidden && !this.paused && this.state !== 'over') this.togglePause(); };
     window.addEventListener('keydown', this.kd); window.addEventListener('keyup', this.ku);
     document.addEventListener('visibilitychange', this.vis);
+    // מודדים את הקנבס רק כשהמסך משתנה (סיבוב/מסך מלא), לא בכל פריים
+    this.needSize = true; this.onResize = () => { this.needSize = true; };
+    window.addEventListener('resize', this.onResize); window.addEventListener('orientationchange', this.onResize);
+    document.addEventListener('fullscreenchange', this.onResize);
+    this.hudCache = new Map();
     if (document.activeElement) document.activeElement.blur();
     this.last = performance.now();
     this.banner('סיבוב 1', '', 1.6);
@@ -74,6 +79,8 @@ class Fight {
     cancelAnimationFrame(this.raf);
     window.removeEventListener('keydown', this.kd); window.removeEventListener('keyup', this.ku);
     document.removeEventListener('visibilitychange', this.vis);
+    window.removeEventListener('resize', this.onResize); window.removeEventListener('orientationchange', this.onResize);
+    document.removeEventListener('fullscreenchange', this.onResize);
   }
   // ---------- קלט ----------
   onKey(e, down) {
@@ -424,7 +431,7 @@ class Fight {
 
   render() {
     const c = this.canvas;
-    if (!sizeCanvas(c)) return;
+    if (this.needSize) { if (!sizeCanvas(c, LOW_FX ? 1.25 : 2)) return; this.needSize = false; }
     const ctx = this.ctx, k = c.width / FW, t = performance.now() / 1000;
     ctx.setTransform(k, 0, 0, k, 0, 0);
     ctx.save();
@@ -486,12 +493,15 @@ class Fight {
   }
 
   updateHud() {
-    const h = this.hud;
+    const h = this.hud, cache = this.hudCache;
+    const bar = (el, v) => {
+      const q = Math.round(Math.max(0, Math.min(1, v)) * 400) / 400;
+      if (cache.get(el) !== q) { cache.set(el, q); el.style.transform = `scaleX(${q})`; }
+    };
     const set = (el, f) => {
-      el.hp.style.width = (f.hp / f.maxHp * 100).toFixed(1) + '%';
-      el.lag.style.width = (f.hpLag / f.maxHp * 100).toFixed(1) + '%';
-      el.sta.style.width = (f.sta / f.maxSta * 100).toFixed(1) + '%';
-      el.sta.classList.toggle('low', f.sta < f.maxSta * 0.25);
+      bar(el.hp, f.hp / f.maxHp); bar(el.lag, f.hpLag / f.maxHp); bar(el.sta, f.sta / f.maxSta);
+      const low = f.sta < f.maxSta * 0.25;
+      if (el.sta._low !== low) { el.sta._low = low; el.sta.classList.toggle('low', low); }
       const kd = '●'.repeat(f.kd);
       if (el.kd.textContent !== kd) el.kd.textContent = kd;
     };

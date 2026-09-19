@@ -29,8 +29,16 @@
   window.matchMedia('(display-mode: standalone)').addEventListener('change', changed);
 
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    // כשגרסה חדשה של המשחק מותקנת ברקע — מודיעים ל-ui.js, שיטען מחדש כשזה לא מפריע (לא באמצע קרב)
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (hadController) document.dispatchEvent(new Event('pwa-update'));
+    });
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(() => { /* ללא אופליין */ });
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+        // בודקים עדכון גם כשחוזרים לאפליקציה אחרי שהייתה ברקע
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+      }).catch(() => { /* ללא אופליין */ });
     });
   }
 })();

@@ -26,6 +26,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* חובה: אחרת רכיבים עם display משלהם מתעלמים מ-hidden */
 html, body { height: 100%; }
 body {
   margin: 0; color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
@@ -348,7 +349,7 @@ kbd { font-family: var(--font-body); font-weight: 700; font-size: 12px; min-widt
 #ring { display: block; width: 100%; aspect-ratio: 960 / 440; max-width: 100%; touch-action: none; }
 .pause-btn { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(0,0,0,.45); color: #fff; cursor: pointer; font-size: 12px; letter-spacing: -2px; }
 .pause-btn:active { transform: scale(.92); }
-.pause-ov { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5,6,10,.6); backdrop-filter: blur(3px); }
+.pause-ov { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(5,6,10,.78); }
 .pause-ov .card { display: flex; flex-direction: column; gap: 10px; min-width: 240px; text-align: center; }
 .touch { display: flex; justify-content: space-between; gap: 12px; user-select: none; -webkit-user-select: none; touch-action: none; }
 .pad { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -527,3 +528,7 @@ input { font-size: 16px; } /* מונע זום אוטומטי של iOS בעת ה�
   .hub .tab.on.t-blue { color: #6da2ff; }
   body:has(.hub .tabs) #toast { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* פסי החיים/סיבולת בקרב: transform במקום width — בלי חישובי פריסה בכל פריים */
+.hbar i { width: 100%; transform-origin: left center; will-change: transform; }
+.plate.right .hbar i { transform-origin: right center; }
