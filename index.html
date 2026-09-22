@@ -37,6 +37,12 @@ button{border:1px solid #ffffff25;color:white;font-weight:900;background:#171d27
 <section class="select" id="select"><h1>CHOOSE YOUR FIGHTER</h1><p>Sprite fighters with real animation frames</p><div class="roster" id="roster"></div><button class="start" id="startBtn">START FIGHT</button></section>
 </div>
 <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(()=>{});
+}
+if ('caches' in window) {
+  caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).catch(()=>{});
+}
 const F={
 WOLFBORN:{o:0,idle:[[3,4,22,30],[24,5,20,29],[43,5,20,29],[64,5,21,30]],walk:[[92,5,21,29],[112,5,22,30],[132,5,22,29],[155,5,22,29]],punch:[[2,40,25,30],[30,40,36,29],[63,40,24,29]],kick:[[92,39,22,30],[115,40,33,29],[147,40,20,29]],block:[[3,75,22,26],[27,75,20,26]],super:[[53,75,26,27],[84,73,28,30],[114,76,37,27],[149,75,30,28]],hit:[[10,104,27,28],[37,107,30,26]],ko:[[93,114,34,17],[128,119,48,12]]},
 KAI:{o:136,idle:[[5,3,20,30],[26,3,19,30],[46,3,19,30],[66,3,19,30]],walk:[[96,3,20,29],[117,3,20,30],[138,3,16,29],[155,3,21,30]],punch:[[4,41,25,27],[30,41,27,26],[59,41,22,27]],kick:[[99,41,19,27],[123,40,29,27],[154,41,20,27]],block:[[3,73,19,27],[25,73,19,27]],super:[[50,75,26,24],[82,75,27,24],[112,75,34,25],[143,75,33,24]],hit:[[14,105,25,23],[44,104,27,24]],ko:[[98,112,25,16],[128,118,47,10]]},
@@ -44,7 +50,8 @@ TITAN:{o:272,idle:[[3,4,24,33],[29,4,23,33],[53,4,24,33],[53,4,24,33]],walk:[[88
 ROSA:{o:408,idle:[[4,3,20,30],[23,3,20,30],[42,3,22,30],[64,3,21,30]],walk:[[93,3,20,30],[114,3,21,30],[135,3,19,30],[156,3,21,30]],punch:[[3,40,23,29],[29,41,25,28],[55,42,25,27]],kick:[[89,40,26,29],[115,40,34,29],[150,41,27,28]],block:[[3,76,22,26],[24,76,22,26]],super:[[50,78,23,24],[75,76,24,26],[99,76,28,26],[127,77,48,26]],hit:[[19,109,29,22],[44,109,27,22]],ko:[[98,113,23,17],[98,113,23,17]]}
 };
 const C=[['WOLFBORN','Half Wolf'],['KAI','Karate'],['TITAN','Wrestling'],['ROSA','Mexican Fighter']];
-const $=id=>document.getElementById(id),cv=$('game'),x=cv.getContext('2d'),img=new Image(); img.src='assets/fighters.png';
+const $=id=>document.getElementById(id),cv=$('game'),x=cv.getContext('2d'),img=new Image(); img.src='assets/fighters.png?v=preview-anim-v5';
+img.onerror=()=>{document.body.insertAdjacentHTML('beforeend','<div style="position:fixed;z-index:9999;top:45%;left:10%;right:10%;background:#900;padding:14px;text-align:center;border-radius:12px">SPRITE LOAD ERROR</div>')};
 const UI={
  php:$('php'),ehp:$('ehp'),psp:$('psp'),esp:$('esp'),superBtn:$('superBtn'),
  pstate:$('pstate'),estate:$('estate'),msg:$('msg'),punch:$('punch'),kick:$('kick'),
